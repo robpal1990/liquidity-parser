@@ -212,38 +212,38 @@ CURVE_V1 = [{
 
 CURVE_V2 = [
     {
-    "name": "TokenExchange",
-    "inputs": [
-        {
-            "name": "buyer",
-            "type": "address",
-            "indexed": True},
-        {
-            "name": "sold_id",
-            "type": "uint256",
-            "indexed": False},
-        {
-            "name": "tokens_sold",
-            "type": "uint256",
-            "indexed": False},
-        {
-            "name": "bought_id",
-            "type": "uint256",
-            "indexed": False},
-        {
-            "name": "tokens_bought",
-            "type": "uint256",
-            "indexed": False},
-        {
-            "name": "fee",
-            "type": "uint256",
-            "indexed": False},
-        {
-            "name": "packed_price_scale",
-            "type": "uint256",
-            "indexed": False}],
-    "anonymous": False,
-    "type": "event"}]
+        "name": "TokenExchange",
+        "inputs": [
+            {
+                "name": "buyer",
+                "type": "address",
+                "indexed": True},
+            {
+                "name": "sold_id",
+                "type": "uint256",
+                "indexed": False},
+            {
+                "name": "tokens_sold",
+                "type": "uint256",
+                "indexed": False},
+            {
+                "name": "bought_id",
+                "type": "uint256",
+                "indexed": False},
+            {
+                "name": "tokens_bought",
+                "type": "uint256",
+                "indexed": False},
+            {
+                "name": "fee",
+                "type": "uint256",
+                "indexed": False},
+            {
+                "name": "packed_price_scale",
+                "type": "uint256",
+                "indexed": False}],
+        "anonymous": False,
+        "type": "event"}]
 
 CURVE_V2_1 = [
     {
@@ -1045,59 +1045,13 @@ SNX = [{
             "type": "address"}],
     "name": "AtomicSynthExchange",
     "type": "event"}]
-# {
-#     "anonymous": False,
-#     "inputs": [{
-#         "indexed": True,
-#         "internalType": "address",
-#         "name": "account",
-#         "type": "address"}, {
-#         "indexed": False,
-#         "internalType": "bytes32",
-#         "name": "fromCurrencyKey",
-#         "type": "bytes32"}, {
-#         "indexed": False,
-#         "internalType": "uint256",
-#         "name": "fromAmount",
-#         "type": "uint256"}, {
-#         "indexed": False,
-#         "internalType": "bytes32",
-#         "name": "toCurrencyKey",
-#         "type": "bytes32"}, {
-#         "indexed": False,
-#         "internalType": "uint256",
-#         "name": "toAmount",
-#         "type": "uint256"}, {
-#         "indexed": False,
-#         "internalType": "address",
-#         "name": "toAddress",
-#         "type": "address"}],
-#     "name": "SynthExchange",
-#     "type": "event"}]
 
-C = [{
-         "name": "TokenExchange",
-         "inputs": [{
-                        "name": "buyer",
-                        "type": "address",
-                        "indexed": True}, {
-                        "name": "sold_id",
-                        "type": "uint256",
-                        "indexed": False}, {
-                        "name": "tokens_sold",
-                        "type": "uint256",
-                        "indexed": False}, {
-                        "name": "bought_id",
-                        "type": "uint256",
-                        "indexed": False}, {
-                        "name": "tokens_bought",
-                        "type": "uint256",
-                        "indexed": False}, {
-                        "name": "fee",
-                        "type": "uint256",
-                        "indexed": False}, {
-                        "name": "packed_price_scale",
-                        "type": "uint256",
-                        "indexed": False}],
-         "anonymous": False,
-         "type": "event"}]
+BEBOP_RFQ = [
+    {"anonymous": False,
+     "inputs": [
+         {"indexed": False,
+          "internalType": "bytes32",
+          "name": "order_hash",
+          "type": "bytes32"}],
+     "name": "AggregateOrderExecuted",
+     "type": "event"}]

@@ -9,7 +9,7 @@ from abis import AAVE_LENDING_V2
 from addresses import TOKENS, ZERO, PSM_USDC_A, MCD_PSM_USDC_A
 from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, PANCAKE_V3, \
     SYNAPSE, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, INTEGRAL, \
-    SNX
+    SNX, BEBOP_RFQ
 from token_abis import STETH, AAVE_TOKEN, ERC20
 from utils import generate_swap_dag
 
@@ -40,6 +40,7 @@ OTC_ORDER = w3.eth.contract(address=None, abi=OTC_ORDER)
 HASHFLOW = w3.eth.contract(address=None, abi=HASHFLOW)
 RFQ_ORDER = w3.eth.contract(address=None, abi=RFQ_ORDER)
 ONEINCH_RFQ = w3.eth.contract(address=None, abi=ONEINCH_RFQ)
+BEBOP_RFQ = w3.eth.contract(address=None, abi=BEBOP_RFQ)
 INTEGRAL = w3.eth.contract(address=None, abi=INTEGRAL)
 SNX = w3.eth.contract(address=None, abi=SNX)
 
@@ -54,7 +55,6 @@ CACHE = load_pool_cache()
 
 
 def get_oneinch_rfq(r_):
-    first_log_index = r_['logs'][0]['logIndex']
     token = w3.eth.contract(address=None, abi=ERC20)
     rfq_events = ONEINCH_RFQ.events.OrderFilledRFQ().process_receipt(r_)
     # limit_events = ONEINCH_RFQ.events.OrderFilled().process_receipt(r_)
@@ -71,10 +71,10 @@ def get_oneinch_rfq(r_):
         rfq_action = {
             'pool_address': maker,
             'protocol': 'oneinch_rfq',
-            'token_out': taker_token,
-            'amount_out': taker_amount,
-            'token_in': maker_token,
-            'amount_in': maker_amount,
+            'token_out': maker_token,
+            'amount_out': maker_amount,
+            'token_in': taker_token,
+            'amount_in': taker_amount,
             'from': out_['args']['from'],
             'to': in_['args']['to'],
             'log_index': index
@@ -82,6 +82,32 @@ def get_oneinch_rfq(r_):
         rfq.append(rfq_action)
     return rfq
 
+
+def get_bebop_rfq(r_):
+    token = w3.eth.contract(address=None, abi=ERC20)
+    rfq_events = BEBOP_RFQ.events.AggregateOrderExecuted().process_receipt(r_)
+    transfers = token.events.Transfer().process_receipt(r_)
+    rfq = []
+    for event in rfq_events:
+        index = event['logIndex']
+        # Last two transfers before AggregateOrderExecuted should be the swap
+        last_two = [e for e in transfers if e['logIndex'] < index][-2:]
+        in_, out_ = last_two[0], last_two[1]
+        maker, maker_token, maker_amount = in_['args']['from'], in_['address'], in_['args']['value']
+        taker, taker_token, taker_amount = out_['args']['from'], out_['address'], out_['args']['value']
+        rfq_action = {
+            'pool_address': maker,
+            'protocol': 'bebop_rfq',
+            'token_out': maker_token,
+            'amount_out': maker_amount,
+            'token_in': taker_token,
+            'amount_in': taker_amount,
+            'from': out_['args']['from'],
+            'to': in_['args']['to'],
+            'log_index': index
+        }
+        rfq.append(rfq_action)
+    return rfq
 
 def get_aave_actions(r_):
     first_log_index = r_['logs'][0]['logIndex']
@@ -127,57 +153,57 @@ def get_aave_actions(r_):
     }
 
 
-def get_stETH_actions(r):
+def get_steth_actions(r):
     """
     web3py AttrDicts are annoying, because one cannot dot-access `from` and
     `to` parameters as these are Python keywords. Therefore we parse them
     as normal dicts.
     """
     first_log_index = r['logs'][0]['logIndex']
-    token = w3.eth.contract(address=TOKENS['stETH'], abi=stETH)
+    token = w3.eth.contract(address=TOKENS['stETH'], abi=STETH)
     transfers = token.events.Transfer().process_receipt(r)
 
-    stETH_wraps = [t for t in transfers if
+    steth_wraps = [t for t in transfers if
                    t.address == TOKENS['stETH'] and t['args'][
                        'to'] == TOKENS['wstETH']]
     wraps = []
-    for wrap in stETH_wraps:
+    for wrap in steth_wraps:
         from_ = wrap['args']['from']
         index = wrap['logIndex']
-        wstETH_log = token.events.Transfer().process_log(r['logs'][index - 1 - first_log_index])
-        assert wstETH_log['address'] == TOKENS['wstETH']
-        assert wstETH_log['args']['to'] == from_
+        wsteth_log = token.events.Transfer().process_log(r['logs'][index - 1 - first_log_index])
+        assert wsteth_log['address'] == TOKENS['wstETH']
+        assert wsteth_log['args']['to'] == from_
         wrap_action = {
             'address': from_,
             'stETH_out': wrap['args']['value'],
-            'wstETH_in': wstETH_log['args']['value'],
+            'wstETH_in': wsteth_log['args']['value'],
             'log_index': index
         }
         wraps.append(wrap_action)
 
-    stETH_unwraps = [t for t in transfers if
+    steth_unwraps = [t for t in transfers if
                      t.address == TOKENS['stETH'] and t['args'][
                          'from'] == TOKENS['wstETH']]
     unwraps = []
-    for unwrap in stETH_unwraps:
+    for unwrap in steth_unwraps:
         to_ = unwrap['args']['to']
         index = unwrap['logIndex']
-        wstETH_log = token.events.Transfer().process_log(r['logs'][index - 1 - first_log_index])
-        assert wstETH_log['address'] == TOKENS['wstETH']
-        assert wstETH_log['args']['from'] == to_
+        wsteth_log = token.events.Transfer().process_log(r['logs'][index - 1 - first_log_index])
+        assert wsteth_log['address'] == TOKENS['wstETH']
+        assert wsteth_log['args']['from'] == to_
         wrap_action = {
             'address': to_,
             'stETH_in': unwrap['args']['value'],
-            'wstETH_out': wstETH_log['args']['value'],
+            'wstETH_out': wsteth_log['args']['value'],
             'log_index': index
         }
         unwraps.append(wrap_action)
 
-    stETH_mints = [t for t in transfers if
+    steth_mints = [t for t in transfers if
                    t.address == TOKENS['stETH'] and t['args'][
                        'from'] == ZERO]
     mints = []
-    for mint in stETH_mints:
+    for mint in steth_mints:
         to_ = mint['args']['to']
         index = mint['logIndex']
         deposit_log = token.events.Submitted().process_log(r['logs'][index - 1 - first_log_index])
@@ -275,6 +301,25 @@ def get_psm_usdc_actions(r_):
     return swaps
 
 
+def get_frxeth_actions(r_):
+    pass
+
+
+def get_reth_actions(r_):
+    # 0x649c9062ab55a490596a34a1c78783ed252f7ea06be5577e94fed14dab9fed89
+    pass
+
+
+def get_mkusd_actions(r_):
+    # 0x1b75c69fb1e599ce4067b772d79bf926a98f4f2e409c83817a53567b2bdbb9c1
+    pass
+
+
+def get_sdai_actions(r_):
+    # 0x0c067dc4d141e2476eed2653d99c840e9537daac3363dc94eb2d489719658f24
+    pass
+
+
 def extract_erc20_transfers(receipt):
     erc20 = w3.eth.contract(address=None, abi=ERC20)
     transfers = erc20.events.Transfer().process_receipt(receipt)
@@ -282,26 +327,6 @@ def extract_erc20_transfers(receipt):
 
 
 def extract_swaps(r):
-    # balancer_v1_events = BALANCER_V1.events.LOG_SWAP().process_receipt(r)
-    # balancer_v2_events = BALANCER_V2.events.Swap().process_receipt(r)
-    # dodo_events = DODO.events.SellBaseToken().process_receipt(r) + DODO.events.BuyBaseToken().process_receipt(r)
-    # dodo_v2_events = DODO_V2.events.DODOSwap().process_receipt(r)
-    # uni_events = UNI.events.TokenPurchase().process_receipt(r)
-    # uni_v2_events = UNI_V2.events.Swap().process_receipt(r)
-    # uni_v3_events = UNI_V3.events.Swap().process_receipt(r)
-    # pancake_v3_events = PANCAKE_V3.events.Swap().process_receipt(r)
-    # curve_v1_events = CURVE_V1.events.TokenExchange().process_receipt(
-    #     r) + CURVE_V1.events.TokenExchangeUnderlying().process_receipt(r)
-    # curve_v2_events = CURVE_V2.events.TokenExchange().process_receipt(r)
-    # synapse_events = SYNAPSE.events.TokenSwap().process_receipt(r)
-    # bancor_v3_events = BANCOR_V3.events.TokensTraded().process_receipt(r)
-    # kyber_events = KYBER.events.Swap().process_receipt(r)
-    # mav_v1_events = MAV_V1.events.Swap().process_receipt(r)
-    # clipper_events = CLIPPER.events.Swapped().process_receipt(r)
-    # otc_order_events = OTC_ORDER.events.OtcOrderFilled().process_receipt(r)
-    # hashflow_events = HASHFLOW.events.Trade().process_receipt(r)
-    # rfq_order_events = RFQ_ORDER.events.RfqOrderFilled().process_receipt(r)
-
     swap_events = {
         'BALANCER_V1': BALANCER_V1.events.LOG_SWAP().process_receipt(r),
         'BALANCER_V2': BALANCER_V2.events.Swap().process_receipt(r),
@@ -327,14 +352,13 @@ def extract_swaps(r):
         'SNX': get_snx_actions(r)
     }
 
-    # stETH_actions = get_stETH_actions(r)
+    # stETH_actions = get_steth_actions(r)
     # aave_actions = get_aave_actions(r)
-    psm_usdc_actions = get_psm_usdc_actions(r)
-    oneinch_rfq = get_oneinch_rfq(r)
     # swap_events['STETH_ACTIONS'] = stETH_actions
     # swap_events['AAVE_ACTIONS'] = aave_actions
-    swap_events['ONEINCH_RFQ'] = oneinch_rfq
-    swap_events['PSM_USDC'] = psm_usdc_actions
+    swap_events['ONEINCH_RFQ'] = get_oneinch_rfq(r)
+    swap_events['BEBOP_RFQ'] = get_bebop_rfq(r)
+    swap_events['PSM_USDC'] = get_psm_usdc_actions(r)
 
     return {k: v for k, v in swap_events.items() if v}
 
@@ -346,8 +370,11 @@ def main():
     cache = load_pool_cache()
     pools_cached = set([k for v in cache.values() for k in v.keys()])
 
+    # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
     # receipt = w3.eth.get_transaction_receipt('0xe47c6496f1aa11dfd2205fffc91d48b52f6a952aab1ead585d3ca53826e8081f')
-    receipt = w3.eth.get_transaction_receipt('0x2ea334ce14efe486c8dc811f2ba9463812b95270963ed681e86957383d9651c9')
+    # receipt = w3.eth.get_transaction_receipt('0x2ea334ce14efe486c8dc811f2ba9463812b95270963ed681e86957383d9651c9')
+    # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
+    receipt = w3.eth.get_transaction_receipt('0xdc1fab272e1b3393a929857a168b52a876e245d2a3d7da08c98e8e01c1274572')
     transfers = extract_erc20_transfers(receipt)
     swaps = extract_swaps(receipt)
     dag = generate_swap_dag(swaps, transfers)

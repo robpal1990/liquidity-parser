@@ -22,7 +22,10 @@ def generate_swap_dag(events, transfers):
     balancer_v2_swaps = events.get('BALANCER_V2')
     oneinch_rfq_swaps = events.get('ONEINCH_RFQ')
     dodo_swaps = events.get('DODO')
+    dodo_v2_swaps = events.get('DODO_V2')
     psm_usdc_swaps = events.get('PSM_USDC')
+    rfq_order_swaps = events.get('RFQ_ORDER')
+    bebop_rfq_swaps = events.get('BEBOP_RFQ')
 
     if snx_swaps is not None:
         swaps += snx_swaps
@@ -30,8 +33,41 @@ def generate_swap_dag(events, transfers):
     if oneinch_rfq_swaps is not None:
         swaps += oneinch_rfq_swaps
 
+    if bebop_rfq_swaps is not None:
+        swaps += bebop_rfq_swaps
+
     if psm_usdc_swaps is not None:
         swaps += psm_usdc_swaps
+
+    if rfq_order_swaps is not None:
+        for s in rfq_order_swaps:
+            swap = {
+                'pool_address': s['args']['maker'],
+                'protocol': 'zeroex_rfq_order',
+                'token_in': s['args']['takerToken'],
+                'amount_in': s['args']['takerTokenFilledAmount'],
+                'token_out': s['args']['makerToken'],
+                'amount_out': s['args']['makerTokenFilledAmount'],
+                'from': s['args']['taker'],
+                'to': s['args']['taker'],
+                'log_index': s['logIndex']
+            }
+            swaps.append(swap)
+
+    if dodo_v2_swaps is not None:
+        for s in dodo_v2_swaps:
+            swap = {
+                'pool_address': s['address'],
+                'protocol': 'dodo_v2',
+                'token_in': s['args']['fromToken'],
+                'amount_in': s['args']['fromAmount'],
+                'token_out': s['args']['toToken'],
+                'amount_out': s['args']['toAmount'],
+                'from': s['args']['trader'],
+                'to': s['args']['receiver'],
+                'log_index': s['logIndex']
+            }
+            swaps.append(swap)
 
     if curve_v1_swaps is not None:
         for s in curve_v1_swaps:
@@ -150,23 +186,22 @@ def generate_swap_dag(events, transfers):
             # Balancer multihops are just accounting inside the contract, no funds are moved
             # and will not emit Transfers.
 
-            prev_transfers = [t for t in transfers if
+            token_in_transfers = [t for t in transfers if
                               t['address'] == s['args']['tokenIn'] and t['args']['value'] == s['args']['amountIn'] and
                               t[
                                   'logIndex'] > s['logIndex']]
-            if len(prev_transfers) > 0:
-                prev_transfer = prev_transfers[0]
-                swap['from'] = prev_transfer['args']['from']
-            subseq_transfers = [t for t in transfers if
+            if len(token_in_transfers) > 0:
+                token_in_transfer = token_in_transfers[0]
+                swap['from'] = token_in_transfer['args']['from']
+            token_out_transfers = [t for t in transfers if
                                 t['address'] == s['args']['tokenOut'] and t['args']['value'] == s['args'][
                                     'amountOut'] and t[
                                     'logIndex'] > s['logIndex']]
-            if len(subseq_transfers) > 0:
-                subseq_transfer = subseq_transfers[0]
-                swap['to'] = subseq_transfer['args']['to']
+            if len(token_out_transfers) > 0:
+                token_out_transfer = token_out_transfers[0]
+                swap['to'] = token_out_transfer['args']['to']
 
             # If no transfers then multihop within the Vault
-            import ipdb; ipdb.set_trace()
             if swap.get('from') is None:
                 swap['from'] = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
             if swap.get('to') is None:
