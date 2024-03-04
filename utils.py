@@ -24,8 +24,13 @@ def generate_swap_dag(events, transfers):
     dodo_swaps = events.get('DODO')
     dodo_v2_swaps = events.get('DODO_V2')
     psm_usdc_swaps = events.get('PSM_USDC')
+    synapse_swaps = events.get('SYNAPSE')
+    mav_v1_swaps = events.get('MAV_V1')
+
     rfq_order_swaps = events.get('RFQ_ORDER')
     bebop_rfq_swaps = events.get('BEBOP_RFQ')
+    hashflow_swaps = events.get('HASHFLOW')
+    clipper_swaps = events.get('CLIPPER')
 
     if snx_swaps is not None:
         swaps += snx_swaps
@@ -39,6 +44,12 @@ def generate_swap_dag(events, transfers):
     if psm_usdc_swaps is not None:
         swaps += psm_usdc_swaps
 
+    if hashflow_swaps is not None:
+        swaps += hashflow_swaps
+
+    if clipper_swaps is not None:
+        swaps += clipper_swaps
+
     if rfq_order_swaps is not None:
         for s in rfq_order_swaps:
             swap = {
@@ -50,6 +61,21 @@ def generate_swap_dag(events, transfers):
                 'amount_out': s['args']['makerTokenFilledAmount'],
                 'from': s['args']['taker'],
                 'to': s['args']['taker'],
+                'log_index': s['logIndex']
+            }
+            swaps.append(swap)
+
+    if synapse_swaps is not None:
+        for s in synapse_swaps:
+            swap = {
+                'pool_address': s['address'],
+                'protocol': 'synapse',
+                'token_in': CACHE['SYNAPSE'][s['address']][str(s['args']['soldId'])],
+                'amount_in': s['args']['tokensSold'],
+                'token_out':  CACHE['SYNAPSE'][s['address']][str(s['args']['boughtId'])],
+                'amount_out': s['args']['tokensBought'],
+                'from': s['args']['buyer'],
+                'to': s['args']['buyer'],
                 'log_index': s['logIndex']
             }
             swaps.append(swap)
@@ -253,6 +279,33 @@ def generate_swap_dag(events, transfers):
             else:
                 logging.warning('SUSPICIOUS DODO SWAP')
                 continue
+            swaps.append(swap)
+
+    if mav_v1_swaps is not None:
+        for s in mav_v1_swaps:
+            if s['address'] not in CACHE['MAV_V1']:
+                logging.warning(f"Missing MAV_V1 pool {s['address']}")
+                continue
+
+            swap = {
+                'pool_address': s['address'],
+                'protocol': 'mav_v1',
+                'log_index': s['logIndex'],
+                # Simplification but seems like the `sender` address does not
+                # take custody over tokens
+                'from': s['args']['recipient'],
+                'to': s['args']['recipient'],
+                'amount_in': s['args']['amountIn'],
+                'amount_out': s['args']['amountOut']
+
+            }
+
+            if s['args']['tokenAIn']:
+                swap['token_in'] = CACHE['MAV_V1'][s['address']]["0"]
+                swap['token_out'] = CACHE['MAV_V1'][s['address']]["1"]
+            else:
+                swap['token_in'] = CACHE['MAV_V1'][s['address']]["1"]
+                swap['token_out'] = CACHE['MAV_V1'][s['address']]["0"]
             swaps.append(swap)
 
     return swaps

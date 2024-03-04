@@ -2,11 +2,12 @@ import json
 import logging
 import warnings
 from pprint import pprint
+import pandas as pd
 
 from web3 import Web3
 
 from abis import AAVE_LENDING_V2
-from addresses import TOKENS, ZERO, PSM_USDC_A, MCD_PSM_USDC_A
+from addresses import TOKENS, ZERO, PSM_USDC_A, MCD_PSM_USDC_A, CLIPPER_POOL
 from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, PANCAKE_V3, \
     SYNAPSE, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, INTEGRAL, \
     SNX, BEBOP_RFQ
@@ -25,7 +26,7 @@ BALANCER_V2 = w3.eth.contract(address=None, abi=BALANCER_V2)  # Also SWAAP_V2
 DODO = w3.eth.contract(address=None, abi=DODO)
 DODO_V2 = w3.eth.contract(address=None, abi=DODO_V2)
 UNI = w3.eth.contract(address=None, abi=UNI)
-UNI_V2 = w3.eth.contract(address=None, abi=UNI_V2)  # Also: SUSHI, SHIBA, CRO, INTEGRAL, NOMISWAP, PANCAKE, FRAXSWAP
+UNI_V2 = w3.eth.contract(address=None, abi=UNI_V2)  # Also: SUSHI, SHIBA, CRO, NOMISWAP, PANCAKE, FRAXSWAP
 UNI_V3 = w3.eth.contract(address=None, abi=UNI_V3)  # Also: KYBER_ELASTIC, SOLIDLY_V3
 PANCAKE_V3 = w3.eth.contract(address=None, abi=PANCAKE_V3)
 CURVE_V1 = w3.eth.contract(address=None, abi=CURVE_V1)
@@ -108,6 +109,54 @@ def get_bebop_rfq(r_):
         }
         rfq.append(rfq_action)
     return rfq
+
+
+def get_hashflow_rfq(r_):
+    token = w3.eth.contract(address=None, abi=ERC20)
+    rfq_events = HASHFLOW.events.Trade().process_receipt(r_)
+    transfers = token.events.Transfer().process_receipt(r_)
+    rfq = []
+    for event in rfq_events:
+        previous = [e for e in transfers if e['logIndex'] < event['logIndex']][-1]
+        next_ = [e for e in transfers if e['logIndex'] > event['logIndex']][0]
+        assert next_['args']['from'] == previous['args']['to']
+        rfq_action = {
+            'pool_address': next_['args']['from'],
+            'protocol': 'hashflow',
+            'token_in': event['args']['baseToken'],
+            'amount_in': event['args']['baseTokenAmount'],
+            'token_out': event['args']['quoteToken'],
+            'amount_out': event['args']['quoteTokenAmount'],
+            'from': event['args']['trader'],
+            'to': event['args']['trader'],
+            'log_index': event['logIndex']
+        }
+        rfq.append(rfq_action)
+    return rfq
+
+
+def get_clipper_actions(r_):
+    token = w3.eth.contract(address=None, abi=ERC20)
+    swap_events = CLIPPER.events.Swapped().process_receipt(r_)
+    transfers = token.events.Transfer().process_receipt(r_)
+    swaps = []
+    for swap in swap_events:
+        previous = [e for e in transfers if e['logIndex'] < swap['logIndex']
+                    and e['args']['to'] == CLIPPER_POOL][-1]
+        swap = {
+            'pool_address': swap['address'],
+            'protocol': 'clipper',
+            'token_in': swap['args']['inAsset'],
+            'amount_in': swap['args']['inAmount'],
+            'token_out': swap['args']['outAsset'],
+            'amount_out': swap['args']['outAmount'],
+            'from': previous['args']['from'],
+            'to': swap['args']['recipient'],
+            'log_index': swap['logIndex']
+        }
+        swaps.append(swap)
+    return swaps
+
 
 def get_aave_actions(r_):
     first_log_index = r_['logs'][0]['logIndex']
@@ -237,7 +286,7 @@ def get_snx_actions(r_):
         if to_address is None:
             logging.info(f"Missing token {to_address}")
         swap = {
-            'address': s_['address'],
+            'pool_address': s_['address'],
             'token_in': from_address,
             'amount_in': s_['args']['fromAmount'],
             'token_out': to_address,
@@ -259,20 +308,22 @@ def get_psm_usdc_actions(r_):
     usdc_to_psm = [t for t in transfers if t['address'] == TOKENS['USDC']
                    and t['args']['to'] == PSM_USDC_A]
     for u in usdc_to_psm:
-        dai_mints = [t for t in transfers if t['logIndex'] > u['logIndex']
-                     and t['args']['from'] == ZERO and t['args']['to'] == u['args']['from']]
+        dai_mints = [t for t in transfers if t['logIndex'] - 5 == u['logIndex']
+                     and t['args']['from'] == ZERO
+                     # and t['args']['to'] == u['args']['from']
+                     ]
 
         assert len(dai_mints) > 0
         next_mint = dai_mints[0]
         swap = {
-            'address': PSM_USDC_A,
+            'pool_address': PSM_USDC_A,
             'protocol': 'psm_usdc_dai',
             'token_in': TOKENS['USDC'],
             'amount_in': u['args']['value'],
             'token_out': TOKENS['DAI'],
             'amount_out': next_mint['args']['value'],
             'from': u['args']['from'],
-            'to': u['args']['from'],
+            'to': next_mint['args']['to'],
             'log_index': u['logIndex']
         }
         swaps.append(swap)
@@ -280,19 +331,20 @@ def get_psm_usdc_actions(r_):
     usdc_from_psm = [t for t in transfers if t['address'] == TOKENS['USDC']
                      and t['args']['from'] == PSM_USDC_A]
     for u in usdc_from_psm:
-        dai_burns = [t for t in transfers if t['logIndex'] < u['logIndex']
-                     and t['args']['from'] == u['args']['to'] and t['args']['to'] == MCD_PSM_USDC_A]
+        dai_burns = [t for t in transfers if t['logIndex'] == u['logIndex'] - 4
+                     # and t['args']['from'] == u['args']['to']
+                     and t['args']['to'] == ZERO]
 
         assert len(dai_burns) > 0
         prev_burn = dai_burns[-1]
         swap = {
-            'address': PSM_USDC_A,
+            'pool_address': PSM_USDC_A,
             'protocol': 'psm_usdc_dai',
             'token_in': TOKENS['DAI'],
             'amount_in': prev_burn['args']['value'],
             'token_out': TOKENS['USDC'],
             'amount_out': u['args']['value'],
-            'from': u['args']['to'],
+            'from': prev_burn['args']['from'],
             'to': u['args']['to'],
             'log_index': u['logIndex']
         }
@@ -344,28 +396,27 @@ def extract_swaps(r):
         'BANCOR_V3': BANCOR_V3.events.TokensTraded().process_receipt(r),
         'KYBER': KYBER.events.Swap().process_receipt(r),
         'MAV_V1': MAV_V1.events.Swap().process_receipt(r),
-        'CLIPPER': CLIPPER.events.Swapped().process_receipt(r),
         'OTC_ORDER': OTC_ORDER.events.OtcOrderFilled().process_receipt(r),
-        'HASHFLOW': HASHFLOW.events.Trade().process_receipt(r),
+        'HASHFLOW': get_hashflow_rfq(r),
         'RFQ_ORDER': RFQ_ORDER.events.RfqOrderFilled().process_receipt(r),
         'INTEGRAL': INTEGRAL.events.Sell().process_receipt(r) + INTEGRAL.events.Buy().process_receipt(r),
-        'SNX': get_snx_actions(r)
-    }
+        'SNX': get_snx_actions(r),
+        'ONEINCH_RFQ': get_oneinch_rfq(r),
+        'BEBOP_RFQ': get_bebop_rfq(r),
+        'CLIPPER': get_clipper_actions(r),
+        'PSM_USDC': get_psm_usdc_actions(r)}
 
-    # stETH_actions = get_steth_actions(r)
+    # steth_actions = get_steth_actions(r)
     # aave_actions = get_aave_actions(r)
-    # swap_events['STETH_ACTIONS'] = stETH_actions
-    # swap_events['AAVE_ACTIONS'] = aave_actions
-    swap_events['ONEINCH_RFQ'] = get_oneinch_rfq(r)
-    swap_events['BEBOP_RFQ'] = get_bebop_rfq(r)
-    swap_events['PSM_USDC'] = get_psm_usdc_actions(r)
+    # swap_events['STETH_ACTIONS'] = steth_actions
+    # swap_events['AAVE_ACTIONS'] = get_aave_actions(r)
 
     return {k: v for k, v in swap_events.items() if v}
 
 
 def main():
-    # logging.info('Loading data')
-    # cowswap = pd.read_csv('/home/robert/Projects/crypto/one_inch_decoder/swaps.csv')
+    logging.info('Loading data')
+    data = pd.read_csv('/home/robert/Projects/liquidity-parser/1inch.csv')
     # logging.info('Data loaded')
     cache = load_pool_cache()
     pools_cached = set([k for v in cache.values() for k in v.keys()])
@@ -374,23 +425,29 @@ def main():
     # receipt = w3.eth.get_transaction_receipt('0xe47c6496f1aa11dfd2205fffc91d48b52f6a952aab1ead585d3ca53826e8081f')
     # receipt = w3.eth.get_transaction_receipt('0x2ea334ce14efe486c8dc811f2ba9463812b95270963ed681e86957383d9651c9')
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
-    receipt = w3.eth.get_transaction_receipt('0xdc1fab272e1b3393a929857a168b52a876e245d2a3d7da08c98e8e01c1274572')
-    transfers = extract_erc20_transfers(receipt)
-    swaps = extract_swaps(receipt)
-    dag = generate_swap_dag(swaps, transfers)
-    pprint(swaps.keys())
+    # receipt = w3.eth.get_transaction_receipt('0xdc1fab272e1b3393a929857a168b52a876e245d2a3d7da08c98e8e01c1274572')
 
-    import ipdb;
-    ipdb.set_trace()
+    # receipt = w3.eth.get_transaction_receipt('0x1621f6f44ff122ba4eab96b3ab178e6c796f0111a4ada60f1b4cda25790ae534')
+    # transfers = extract_erc20_transfers(receipt)
+    # swaps = extract_swaps(receipt)
+    # dag = generate_swap_dag(swaps, transfers)
+    # pprint(swaps.keys())
+    # pprint(dag)
+    # import ipdb;
+    # ipdb.set_trace()
 
-    for i, r in cowswap.iterrows():
-        if i < 300:
+    for i, r in data.iterrows():
+        if i < 2500:
             continue
         tx_hash = r['tx_hash']
         logging.info(f"Processing transaction {i}: {tx_hash}")
-        swaps = extract_swaps(tx_hash)
-        pools_involved = set([p['address'] for v in swaps.values() for p in v])
-        # logging.info(f"Pools used:{pools_involved}")
+        receipt = w3.eth.get_transaction_receipt(r['tx_hash'])
+        swaps = extract_swaps(receipt)
+        transfers = extract_erc20_transfers(receipt)
+        dag = generate_swap_dag(swaps, transfers)
+        # import ipdb; ipdb.set_trace()
+        pools_involved = set([s['pool_address'] for s in dag])
+        logging.info(f"Protocols used:{swaps.keys()}")
         logging.info(f"New pools:{pools_involved - pools_cached}")
 
     import ipdb;
