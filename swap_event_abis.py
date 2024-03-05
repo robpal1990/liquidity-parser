@@ -1047,11 +1047,127 @@ SNX = [{
     "type": "event"}]
 
 BEBOP_RFQ = [
-    {"anonymous": False,
-     "inputs": [
-         {"indexed": False,
-          "internalType": "bytes32",
-          "name": "order_hash",
-          "type": "bytes32"}],
-     "name": "AggregateOrderExecuted",
-     "type": "event"}]
+    {
+        "anonymous": False,
+        "inputs": [
+            {
+                "indexed": False,
+                "internalType": "bytes32",
+                "name": "order_hash",
+                "type": "bytes32"}],
+        "name": "AggregateOrderExecuted",
+        "type": "event"}]
+
+NATIVE_V1 = [
+    {
+        "anonymous": False,
+        "inputs": [
+            {
+                "indexed": False,
+                "internalType": "address",
+                "name": "externalRouter",
+                "type": "address"},
+            {
+                "indexed": False,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"},
+            {
+                "indexed": False,
+                "internalType": "address",
+                "name": "tokenIn",
+                "type": "address"},
+            {
+                "indexed": False,
+                "internalType": "address",
+                "name": "tokenOut",
+                "type": "address"},
+            {
+                "indexed": False,
+                "internalType": "int256",
+                "name": "amountIn",
+                "type": "int256"},
+            {
+                "indexed": False,
+                "internalType": "int256",
+                "name": "amountOut",
+                "type": "int256"},
+            {
+                "indexed": False,
+                "internalType": "bytes16",
+                "name": "quoteId",
+                "type": "bytes16"}],
+        "name": "ExternalSwap",
+        "type": "event"},
+    {
+        "anonymous": False,
+        "inputs": [
+            {
+                "indexed": False,
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"},
+            {
+                "indexed": False,
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"}],
+        "name": "SwapCalculations",
+        "type": "event"}
+]
+
+BANCOR = [{
+    "anonymous": False,
+    "inputs": [{
+        "indexed": True,
+        "internalType": "contract IERC20",
+        "name": "_fromToken",
+        "type": "address"}, {
+        "indexed": True,
+        "internalType": "contract IERC20",
+        "name": "_toToken",
+        "type": "address"}, {
+        "indexed": True,
+        "internalType": "address",
+        "name": "_trader",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "_return",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "int256",
+        "name": "_conversionFee",
+        "type": "int256"}],
+    "name": "Conversion",
+    "type": "event"}]
+
+DEFI_PLAZA = [{
+    "anonymous": False,
+    "inputs": [{
+        "indexed": False,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "address",
+        "name": "inputToken",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "address",
+        "name": "outputToken",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "outputAmount",
+        "type": "uint256"}],
+    "name": "Swapped",
+    "type": "event"}]

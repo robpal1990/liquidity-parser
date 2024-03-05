@@ -26,20 +26,35 @@ def generate_swap_dag(events, transfers):
     psm_usdc_swaps = events.get('PSM_USDC')
     synapse_swaps = events.get('SYNAPSE')
     mav_v1_swaps = events.get('MAV_V1')
+    bancor_swaps = events.get('BANCOR')
+    defi_plaza_swaps = events.get('DEFI_PLAZA')
+
+    reth_swaps = events.get('RETH')
+    frxeth_swaps = events.get('FRXETH')
 
     rfq_order_swaps = events.get('RFQ_ORDER')
     bebop_rfq_swaps = events.get('BEBOP_RFQ')
     hashflow_swaps = events.get('HASHFLOW')
     clipper_swaps = events.get('CLIPPER')
+    native_swaps = events.get('NATIVE_V1')
 
     if snx_swaps is not None:
         swaps += snx_swaps
+
+    if reth_swaps is not None:
+        swaps += reth_swaps
+
+    if frxeth_swaps is not None:
+        swaps += frxeth_swaps
 
     if oneinch_rfq_swaps is not None:
         swaps += oneinch_rfq_swaps
 
     if bebop_rfq_swaps is not None:
         swaps += bebop_rfq_swaps
+
+    if native_swaps is not None:
+        swaps += native_swaps
 
     if psm_usdc_swaps is not None:
         swaps += psm_usdc_swaps
@@ -72,7 +87,7 @@ def generate_swap_dag(events, transfers):
                 'protocol': 'synapse',
                 'token_in': CACHE['SYNAPSE'][s['address']][str(s['args']['soldId'])],
                 'amount_in': s['args']['tokensSold'],
-                'token_out':  CACHE['SYNAPSE'][s['address']][str(s['args']['boughtId'])],
+                'token_out': CACHE['SYNAPSE'][s['address']][str(s['args']['boughtId'])],
                 'amount_out': s['args']['tokensBought'],
                 'from': s['args']['buyer'],
                 'to': s['args']['buyer'],
@@ -213,16 +228,17 @@ def generate_swap_dag(events, transfers):
             # and will not emit Transfers.
 
             token_in_transfers = [t for t in transfers if
-                              t['address'] == s['args']['tokenIn'] and t['args']['value'] == s['args']['amountIn'] and
-                              t[
-                                  'logIndex'] > s['logIndex']]
+                                  t['address'] == s['args']['tokenIn'] and t['args']['value'] == s['args'][
+                                      'amountIn'] and
+                                  t[
+                                      'logIndex'] > s['logIndex']]
             if len(token_in_transfers) > 0:
                 token_in_transfer = token_in_transfers[0]
                 swap['from'] = token_in_transfer['args']['from']
             token_out_transfers = [t for t in transfers if
-                                t['address'] == s['args']['tokenOut'] and t['args']['value'] == s['args'][
-                                    'amountOut'] and t[
-                                    'logIndex'] > s['logIndex']]
+                                   t['address'] == s['args']['tokenOut'] and t['args']['value'] == s['args'][
+                                       'amountOut'] and t[
+                                       'logIndex'] > s['logIndex']]
             if len(token_out_transfers) > 0:
                 token_out_transfer = token_out_transfers[0]
                 swap['to'] = token_out_transfer['args']['to']
@@ -306,6 +322,36 @@ def generate_swap_dag(events, transfers):
             else:
                 swap['token_in'] = CACHE['MAV_V1'][s['address']]["1"]
                 swap['token_out'] = CACHE['MAV_V1'][s['address']]["0"]
+            swaps.append(swap)
+
+    if bancor_swaps is not None:
+        for s in bancor_swaps:
+            swap = {
+                'pool_address': s['address'],
+                'protocol': 'bancor',
+                'token_in': s['args']['_fromToken'],
+                'amount_in': s['args']['_amount'],
+                'token_out': s['args']['_toToken'],
+                'amount_out': s['args']['_return'],
+                'from': s['args']['_trader'],
+                'to': s['args']['_trader'],
+                'log_index': s['logIndex']
+            }
+            swaps.append(swap)
+
+    if defi_plaza_swaps is not None:
+        for s in defi_plaza_swaps:
+            swap = {
+                'pool_address': s['address'],
+                'protocol': 'defi_plaza',
+                'token_in': s['args']['inputToken'],
+                'amount_in': s['args']['inputAmount'],
+                'token_out': s['args']['outputToken'],
+                'amount_out': s['args']['outputAmount'],
+                'from': s['args']['sender'],
+                'to': s['args']['sender'],
+                'log_index': s['logIndex']
+            }
             swaps.append(swap)
 
     return swaps

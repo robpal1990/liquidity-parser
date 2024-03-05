@@ -1,17 +1,18 @@
 import json
 import logging
 import warnings
+from collections import defaultdict
 from pprint import pprint
-import pandas as pd
 
+import pandas as pd
 from web3 import Web3
 
 from abis import AAVE_LENDING_V2
-from addresses import TOKENS, ZERO, PSM_USDC_A, MCD_PSM_USDC_A, CLIPPER_POOL
+from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL
 from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, PANCAKE_V3, \
-    SYNAPSE, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, INTEGRAL, \
-    SNX, BEBOP_RFQ
-from token_abis import STETH, AAVE_TOKEN, ERC20
+    SYNAPSE, BANCOR, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, INTEGRAL, \
+    SNX, BEBOP_RFQ, NATIVE_V1, DEFI_PLAZA
+from token_abis import STETH, RETH, SFRXETH, AAVE_TOKEN, ERC20
 from utils import generate_swap_dag
 
 warnings.filterwarnings("ignore")
@@ -26,7 +27,7 @@ BALANCER_V2 = w3.eth.contract(address=None, abi=BALANCER_V2)  # Also SWAAP_V2
 DODO = w3.eth.contract(address=None, abi=DODO)
 DODO_V2 = w3.eth.contract(address=None, abi=DODO_V2)
 UNI = w3.eth.contract(address=None, abi=UNI)
-UNI_V2 = w3.eth.contract(address=None, abi=UNI_V2)  # Also: SUSHI, SHIBA, CRO, NOMISWAP, PANCAKE, FRAXSWAP
+UNI_V2 = w3.eth.contract(address=None, abi=UNI_V2)  # Also: SUSHI, SHIBA, CRO, NOMISWAP, PANCAKE, FRAXSWAP, SAKESWAP
 UNI_V3 = w3.eth.contract(address=None, abi=UNI_V3)  # Also: KYBER_ELASTIC, SOLIDLY_V3
 PANCAKE_V3 = w3.eth.contract(address=None, abi=PANCAKE_V3)
 CURVE_V1 = w3.eth.contract(address=None, abi=CURVE_V1)
@@ -34,7 +35,9 @@ CURVE_V2 = w3.eth.contract(address=None, abi=CURVE_V2)
 CURVE_V2_1 = w3.eth.contract(address=None, abi=CURVE_V2_1)
 SYNAPSE = w3.eth.contract(address=None, abi=SYNAPSE)
 BANCOR_V3 = w3.eth.contract(address=None, abi=BANCOR_V3)
+BANCOR = w3.eth.contract(address=None, abi=BANCOR)
 KYBER = w3.eth.contract(address=None, abi=KYBER)
+DEFI_PLAZA = w3.eth.contract(address=None, abi=DEFI_PLAZA)
 MAV_V1 = w3.eth.contract(address=None, abi=MAV_V1)
 CLIPPER = w3.eth.contract(address=None, abi=CLIPPER)
 OTC_ORDER = w3.eth.contract(address=None, abi=OTC_ORDER)
@@ -42,6 +45,7 @@ HASHFLOW = w3.eth.contract(address=None, abi=HASHFLOW)
 RFQ_ORDER = w3.eth.contract(address=None, abi=RFQ_ORDER)
 ONEINCH_RFQ = w3.eth.contract(address=None, abi=ONEINCH_RFQ)
 BEBOP_RFQ = w3.eth.contract(address=None, abi=BEBOP_RFQ)
+NATIVE_V1 = w3.eth.contract(address=None, abi=NATIVE_V1)
 INTEGRAL = w3.eth.contract(address=None, abi=INTEGRAL)
 SNX = w3.eth.contract(address=None, abi=SNX)
 
@@ -60,7 +64,6 @@ def get_oneinch_rfq(r_):
     rfq_events = ONEINCH_RFQ.events.OrderFilledRFQ().process_receipt(r_)
     # limit_events = ONEINCH_RFQ.events.OrderFilled().process_receipt(r_)
     transfers = token.events.Transfer().process_receipt(r_)
-
     rfq = []
     for event in rfq_events:
         index = event['logIndex']
@@ -129,6 +132,30 @@ def get_hashflow_rfq(r_):
             'amount_out': event['args']['quoteTokenAmount'],
             'from': event['args']['trader'],
             'to': event['args']['trader'],
+            'log_index': event['logIndex']
+        }
+        rfq.append(rfq_action)
+    return rfq
+
+
+def get_native_rfq(r_):
+    token = w3.eth.contract(address=None, abi=ERC20)
+    rfq_events = NATIVE_V1.events.SwapCalculations().process_receipt(r_)
+    transfers = token.events.Transfer().process_receipt(r_)
+    rfq = []
+    for event in rfq_events:
+        next_two = [e for e in transfers if e['logIndex'] > event['logIndex']][:2]
+        amount_in = event['args']['amountIn']
+        assert next_two[1]['args']['value'] == amount_in
+        rfq_action = {
+            'pool_address': next_two[0]['args']['from'],
+            'protocol': 'native_v1',
+            'token_in': next_two[1]['address'],
+            'amount_in': next_two[1]['args']['value'],
+            'token_out': next_two[0]['address'],
+            'amount_out': next_two[0]['args']['value'],
+            'from': event['args']['recipient'],
+            'to': event['args']['recipient'],
             'log_index': event['logIndex']
         }
         rfq.append(rfq_action)
@@ -224,8 +251,8 @@ def get_steth_actions(r):
         assert wsteth_log['args']['to'] == from_
         wrap_action = {
             'address': from_,
-            'stETH_out': wrap['args']['value'],
-            'wstETH_in': wsteth_log['args']['value'],
+            'steth_out': wrap['args']['value'],
+            'wsteth_in': wsteth_log['args']['value'],
             'log_index': index
         }
         wraps.append(wrap_action)
@@ -242,8 +269,8 @@ def get_steth_actions(r):
         assert wsteth_log['args']['from'] == to_
         wrap_action = {
             'address': to_,
-            'stETH_in': unwrap['args']['value'],
-            'wstETH_out': wsteth_log['args']['value'],
+            'steth_in': unwrap['args']['value'],
+            'wsteth_out': wsteth_log['args']['value'],
             'log_index': index
         }
         unwraps.append(wrap_action)
@@ -261,7 +288,7 @@ def get_steth_actions(r):
         mint_action = {
             'address': mint['args']['to'],
             'eth_in': deposit_log['args']['amount'],
-            'stETH_out': mint['args']['value'],
+            'steth_out': mint['args']['value'],
             'log_index': index
         }
         mints.append(mint_action)
@@ -354,12 +381,61 @@ def get_psm_usdc_actions(r_):
 
 
 def get_frxeth_actions(r_):
-    pass
+    token = w3.eth.contract(address=TOKENS['sfrxETH'], abi=SFRXETH)
+    deposits = token.events.Deposit().process_receipt(r_)
+    withdrawals = token.events.Withdraw().process_receipt(r_)
+    swaps = []
+    for d in deposits:
+        action = {
+            'pool_address': TOKENS['sfrxETH'],
+            'protocol': 'sfrxeth_mint',
+            'token_in': TOKENS['frxETH'],
+            'amount_in': d['args']['assets'],
+            'token_out': TOKENS['sfrxETH'],
+            'amount_out': d['args']['shares'],
+            # TODO: Make sure it's the caller
+            'from': d['args']['caller'],
+            'to': d['args']['owner'],
+            'log_index': d['logIndex']
+        }
+        swaps.append(action)
+    for w in withdrawals:
+        action = {
+            'pool_address': TOKENS['sfrxETH'],
+            'protocol': 'sfrxeth_burn',
+            'token_in': TOKENS['sfrxETH'],
+            'amount_in': w['args']['shares'],
+            'token_out': TOKENS['frxETH'],
+            'amount_out': w['args']['assets'],
+            # TODO: Make sure it's the caller
+            'from': w['args']['caller'],
+            'to': w['args']['receiver'],
+            'log_index': w['logIndex']
+        }
+        swaps.append(action)
+    return swaps
 
 
 def get_reth_actions(r_):
-    # 0x649c9062ab55a490596a34a1c78783ed252f7ea06be5577e94fed14dab9fed89
-    pass
+    token = w3.eth.contract(address=TOKENS['rETH'], abi=RETH)
+    burns = token.events.TokensBurned().process_receipt(r_)
+    # TODO: Mints?
+    swaps = []
+    for b in burns:
+        action = {
+            'pool_address': TOKENS['rETH'],
+            'protocol': 'reth_burn',
+            'token_in': TOKENS['rETH'],
+            'amount_in': b['args']['amount'],
+            'token_out': TOKENS['WETH'],
+            'amount_out': b['args']['ethAmount'],
+            'from': b['args']['from'],
+            'to': b['args']['from'],
+            'log_index': b['logIndex']
+        }
+        swaps.append(action)
+
+    return swaps
 
 
 def get_mkusd_actions(r_):
@@ -378,6 +454,26 @@ def extract_erc20_transfers(receipt):
     return transfers
 
 
+def tally_dag(dag):
+    """
+    Check the token tallies to see if we are missing
+    a swap. Net flows of all intermediate tokens should
+    be near zero.
+    """
+
+    tally = defaultdict(int)
+    for d in dag:
+        if d['token_in'] == '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE':
+            tally['0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'] += d['amount_in']
+        else:
+            tally[d['token_in']] += d['amount_in']
+        if d['token_out'] == '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE':
+            tally['0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'] -= d['amount_out']
+        else:
+            tally[d['token_out']] -= d['amount_out']
+    return tally
+
+
 def extract_swaps(r):
     swap_events = {
         'BALANCER_V1': BALANCER_V1.events.LOG_SWAP().process_receipt(r),
@@ -394,7 +490,9 @@ def extract_swaps(r):
             r) + CURVE_V2_1.events.TokenExchange().process_receipt(r),
         'SYNAPSE': SYNAPSE.events.TokenSwap().process_receipt(r),
         'BANCOR_V3': BANCOR_V3.events.TokensTraded().process_receipt(r),
+        'BANCOR': BANCOR.events.Conversion().process_receipt(r),
         'KYBER': KYBER.events.Swap().process_receipt(r),
+        'DEFI_PLAZA': DEFI_PLAZA.events.Swapped().process_receipt(r),
         'MAV_V1': MAV_V1.events.Swap().process_receipt(r),
         'OTC_ORDER': OTC_ORDER.events.OtcOrderFilled().process_receipt(r),
         'HASHFLOW': get_hashflow_rfq(r),
@@ -404,7 +502,11 @@ def extract_swaps(r):
         'ONEINCH_RFQ': get_oneinch_rfq(r),
         'BEBOP_RFQ': get_bebop_rfq(r),
         'CLIPPER': get_clipper_actions(r),
-        'PSM_USDC': get_psm_usdc_actions(r)}
+        'PSM_USDC': get_psm_usdc_actions(r),
+        'RETH': get_reth_actions(r),
+        'FRXETH': get_frxeth_actions(r),
+        'NATIVE_V1': get_native_rfq(r)
+    }
 
     # steth_actions = get_steth_actions(r)
     # aave_actions = get_aave_actions(r)
@@ -427,14 +529,16 @@ def main():
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
     # receipt = w3.eth.get_transaction_receipt('0xdc1fab272e1b3393a929857a168b52a876e245d2a3d7da08c98e8e01c1274572')
 
-    # receipt = w3.eth.get_transaction_receipt('0x1621f6f44ff122ba4eab96b3ab178e6c796f0111a4ada60f1b4cda25790ae534')
-    # transfers = extract_erc20_transfers(receipt)
-    # swaps = extract_swaps(receipt)
-    # dag = generate_swap_dag(swaps, transfers)
-    # pprint(swaps.keys())
-    # pprint(dag)
-    # import ipdb;
-    # ipdb.set_trace()
+    # receipt = w3.eth.get_transaction_receipt('0xb46221ccabb848a944cdb56306b5179c91b5270d95bcaed764690a400f21a0ba')  BANCOR + DEFIPLAZA
+    # receipt = w3.eth.get_transaction_receipt('0xe6c92a2434878fb212a56619c40793818f358a83d4dd593ae00d34509e6084c6')  MSTABLE
+    receipt = w3.eth.get_transaction_receipt('0xb46221ccabb848a944cdb56306b5179c91b5270d95bcaed764690a400f21a0ba')
+    transfers = extract_erc20_transfers(receipt)
+    swaps = extract_swaps(receipt)
+    dag = generate_swap_dag(swaps, transfers)
+    pprint(swaps.keys())
+    pprint(tally_dag(dag))
+    import ipdb;
+    ipdb.set_trace()
 
     for i, r in data.iterrows():
         if i < 2500:
