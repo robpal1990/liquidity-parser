@@ -94,44 +94,42 @@ AAVE_LENDING_V2 = [
     }
 ]
 
-PSM = [
-    {
-        "anonymous": True,
-        "inputs": [
-            {
-                "indexed": True,
-                "internalType": "bytes4",
-                "name": "sig",
-                "type": "bytes4"
-            },
-            {
-                "indexed": True,
-                "internalType": "address",
-                "name": "usr",
-                "type": "address"
-            },
-            {
-                "indexed": True,
-                "internalType": "bytes32",
-                "name": "arg1",
-                "type": "bytes32"
-            },
-            {
-                "indexed": True,
-                "internalType": "bytes32",
-                "name": "arg2",
-                "type": "bytes32"
-            },
-            {
-                "indexed": False,
-                "internalType": "bytes",
-                "name": "data",
-                "type": "bytes"
-            }
-        ],
-        "name": "LogNote",
-        "type": "event"
-    }
-]
+UNI_V2 = [{
+    "constant": True,
+    "inputs": [],
+    "name": "token0",
+    "outputs": [{
+        "internalType": "address",
+        "name": "",
+        "type": "address"}],
+    "payable": False,
+    "stateMutability": "view",
+    "type": "function"}, {
+    "constant": True,
+    "inputs": [],
+    "name": "token1",
+    "outputs": [{
+        "internalType": "address",
+        "name": "",
+        "type": "address"}],
+    "payable": False,
+    "stateMutability": "view",
+    "type": "function"}]
 
-
+UNI_V3 = [{
+    "inputs": [],
+    "name": "token0",
+    "outputs": [{
+        "internalType": "address",
+        "name": "",
+        "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"}, {
+    "inputs": [],
+    "name": "token1",
+    "outputs": [{
+        "internalType": "address",
+        "name": "",
+        "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"}]

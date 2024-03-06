@@ -858,6 +858,22 @@ ONEINCH_RFQ = [{
     "anonymous": False,
     "inputs": [
         {
+            "indexed": False,
+            "internalType": "bytes32",
+            "name": "orderHash",
+            "type": "bytes32"},
+        {
+            "indexed": False,
+            "internalType": "uint256",
+            "name": "makingAmount",
+            "type": "uint256"}],
+    "name": "OrderFilledRFQ",
+    "type": "event"}]
+
+ONEINCH_LIMIT = [{
+    "anonymous": False,
+    "inputs": [
+        {
             "indexed": True,
             "internalType": "address",
             "name": "maker",
@@ -873,20 +889,6 @@ ONEINCH_RFQ = [{
             "name": "remaining",
             "type": "uint256"}],
     "name": "OrderFilled",
-    "type": "event"}, {
-    "anonymous": False,
-    "inputs": [
-        {
-            "indexed": False,
-            "internalType": "bytes32",
-            "name": "orderHash",
-            "type": "bytes32"},
-        {
-            "indexed": False,
-            "internalType": "uint256",
-            "name": "makingAmount",
-            "type": "uint256"}],
-    "name": "OrderFilledRFQ",
     "type": "event"}]
 
 INTEGRAL = [{
@@ -1169,5 +1171,35 @@ DEFI_PLAZA = [{
         "internalType": "uint256",
         "name": "outputAmount",
         "type": "uint256"}],
+    "name": "Swapped",
+    "type": "event"}]
+
+MSTABLE = [{
+    "anonymous": False,
+    "inputs": [{
+        "indexed": True,
+        "internalType": "address",
+        "name": "swapper",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "address",
+        "name": "input",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "address",
+        "name": "output",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "outputAmount",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "scaledFee",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"}],
     "name": "Swapped",
     "type": "event"}]

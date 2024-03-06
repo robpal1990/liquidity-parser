@@ -3,50 +3,59 @@ STETH = [
         "anonymous": False,
         "inputs": [
             {
-                "anonymous": False,
-                "inputs": [
-                    {
-                        "indexed": True,
-                        "name": "from",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": True,
-                        "name": "to",
-                        "type": "address"},
-                    {
-                        "indexed": False,
-                        "name": "sharesValue",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "TransferShares",
-                "type": "event"
+                "indexed": True,
+                "name": "from",
+                "type": "address"
             },
             {
-                "anonymous": False,
-                "inputs": [
-                    {
-                        "indexed": True,
-                        "name": "from",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": True,
-                        "name": "to",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": False,
-                        "name": "value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Transfer",
-                "type": "event"
+                "indexed": True,
+                "name": "to",
+                "type": "address"},
+            {
+                "indexed": False,
+                "name": "sharesValue",
+                "type": "uint256"
             }
-        ]
-    }
+        ],
+        "name": "TransferShares",
+        "type": "event"
+    },
+    {
+        "anonymous": False,
+        "inputs": [
+            {
+                "indexed": True,
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": True,
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "indexed": False,
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "Transfer",
+        "type": "event"
+    },
+    {
+        "anonymous": False,
+        "inputs": [{
+                       "indexed": True,
+                       "name": "sender",
+                       "type": "address"}, {
+                       "indexed": False,
+                       "name": "amount",
+                       "type": "uint256"}, {
+                       "indexed": False,
+                       "name": "referral",
+                       "type": "address"}],
+        "name": "Submitted",
+        "type": "event"}
 ]
 
 RETH = [
@@ -140,50 +149,50 @@ RETH = [
 ]
 
 SFRXETH = [{
-               "anonymous": False,
-               "inputs": [{
-                              "indexed": True,
-                              "internalType": "address",
-                              "name": "caller",
-                              "type": "address"}, {
-                              "indexed": True,
-                              "internalType": "address",
-                              "name": "owner",
-                              "type": "address"}, {
-                              "indexed": False,
-                              "internalType": "uint256",
-                              "name": "assets",
-                              "type": "uint256"}, {
-                              "indexed": False,
-                              "internalType": "uint256",
-                              "name": "shares",
-                              "type": "uint256"}],
-               "name": "Deposit",
-               "type": "event"}, {
-               "anonymous": False,
-               "inputs": [{
-                              "indexed": True,
-                              "internalType": "address",
-                              "name": "caller",
-                              "type": "address"}, {
-                              "indexed": True,
-                              "internalType": "address",
-                              "name": "receiver",
-                              "type": "address"}, {
-                              "indexed": True,
-                              "internalType": "address",
-                              "name": "owner",
-                              "type": "address"}, {
-                              "indexed": False,
-                              "internalType": "uint256",
-                              "name": "assets",
-                              "type": "uint256"}, {
-                              "indexed": False,
-                              "internalType": "uint256",
-                              "name": "shares",
-                              "type": "uint256"}],
-               "name": "Withdraw",
-               "type": "event"}]
+    "anonymous": False,
+    "inputs": [{
+        "indexed": True,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"}, {
+        "indexed": True,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "assets",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"}],
+    "name": "Deposit",
+    "type": "event"}, {
+    "anonymous": False,
+    "inputs": [{
+        "indexed": True,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"}, {
+        "indexed": True,
+        "internalType": "address",
+        "name": "receiver",
+        "type": "address"}, {
+        "indexed": True,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "assets",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"}],
+    "name": "Withdraw",
+    "type": "event"}]
 
 AAVE_TOKEN = [
     {
