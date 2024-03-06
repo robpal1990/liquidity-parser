@@ -569,7 +569,7 @@ def tally_dag(dag):
         if d['token_out'] == '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE':
             tally['0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'] -= d['amount_out']
         elif d['token_out'] == 'ETH':
-            tally['WETH'] -= d['amount_in']
+            tally['WETH'] -= d['amount_out']
         else:
             tally[d['token_out']] -= d['amount_out']
     return tally
@@ -628,7 +628,7 @@ def main():
 
     # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
-    receipt = w3.eth.get_transaction_receipt('0xbfbaa8826d89ced9b2e150cd19c00920ccee4e0ad6f0ba74ba61f9544e617ae4')
+    receipt = w3.eth.get_transaction_receipt('0x2d4db758e6b75fa1c20a8a96a171a104aa5f808f3d488681433e9a4e278fba55')
     transfers = extract_erc20_transfers(receipt)
     swaps = extract_swaps(receipt)
     dag = generate_swap_dag(swaps, transfers, symbols=True)
