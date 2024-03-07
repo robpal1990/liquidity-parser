@@ -300,11 +300,17 @@ def get_steth_actions(r_):
     for wrap in steth_wraps:
         from_ = wrap['args']['from']
         index = wrap['logIndex']
-        previous = [e for e in transfers if e['logIndex'] < wrap['logIndex']
-                    and e['address'] == TOKENS['wstETH']]
-        assert len(previous) > 0
-        wsteth_log = previous[-1]
-        assert wsteth_log['args']['to'] == from_
+        if from_ != ZERO:  # Not the chained WETH --> stETH --> wstETH case
+            previous = [e for e in transfers if e['logIndex'] < wrap['logIndex']
+                        and e['address'] == TOKENS['wstETH']]
+            assert len(previous) > 0
+            wsteth_log = previous[-1]
+            assert wsteth_log['args']['to'] == from_
+        else:  # stETH gets sent from ZERO, means it just got minted and wstETH transfer will be AFTER
+            next_ = [e for e in transfers if e['logIndex'] > wrap['logIndex']
+                        and e['address'] == TOKENS['wstETH']]
+            assert len(next_) > 0
+            wsteth_log = next_[0]
         wrap_action = {
             'pool_address': TOKENS['wstETH'],
             'from': from_,
@@ -628,18 +634,18 @@ def main():
 
     # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
-    receipt = w3.eth.get_transaction_receipt('0x0bb85d4fc3af33fab1dbe2730a38871f4b955d7ab444568b0c241d4f2ef23838')
-    transfers = extract_erc20_transfers(receipt)
-    swaps = extract_swaps(receipt)
-    dag = generate_swap_dag(swaps, transfers, symbols=True)
-    logging.info(f"Protocols used:{list(swaps.keys())}")
-    pprint(dag)
-    pprint(dict(tally_dag(dag)))
-    import ipdb;
-    ipdb.set_trace()
+    # receipt = w3.eth.get_transaction_receipt('0xf584c55338ffa4c269d632bd55f86cc1df0b8bbaf3b0d69028df1a36f1851fe5')
+    # transfers = extract_erc20_transfers(receipt)
+    # swaps = extract_swaps(receipt)
+    # dag = generate_swap_dag(swaps, transfers, symbols=True)
+    # logging.info(f"Protocols used:{list(swaps.keys())}")
+    # pprint(dag)
+    # pprint(dict(tally_dag(dag)))
+    # import ipdb;
+    # ipdb.set_trace()
 
     for i, r in data.iterrows():
-        if i < 300:
+        if i < 550:
             continue
         tx_hash = r['tx_hash']
         logging.info(f"Processing transaction {i}: {tx_hash}")

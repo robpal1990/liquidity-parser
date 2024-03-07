@@ -71,6 +71,7 @@ def generate_swap_dag(events, transfers, symbols):
     bancor_swaps = events.get('BANCOR', [])
     defi_plaza_swaps = events.get('DEFI_PLAZA', [])
     mstable_swaps = events.get('MSTABLE', [])
+    kyber_swaps = events.get('KYBER', [])
 
     reth_swaps = events.get('RETH', [])
     frxeth_swaps = events.get('FRXETH', [])
@@ -186,7 +187,6 @@ def generate_swap_dag(events, transfers, symbols):
 
         if s['address'] not in POOLS['UNI_V2']:
             logging.warning(f"Missing UNI_V2 pool {s['address']}")
-            logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
             t0, t1 = get_uni_v2_pool_data(s['address'])
             POOLS['UNI_V2'][s['address']] = {
                 "0": t0,
@@ -221,8 +221,7 @@ def generate_swap_dag(events, transfers, symbols):
         }
 
         if s['address'] not in POOLS['UNI_V3']:
-            logging.warning(f"Missing UNI_V3/PANCAKE_V3 pool {s['address']}")
-            logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
+            logging.warning(f"Missing UNI_V3 pool {s['address']}")
             t0, t1 = get_uni_v3_pool_data(s['address'])
             POOLS['UNI_V3'][s['address']] = {
                 "0": t0,
@@ -257,8 +256,7 @@ def generate_swap_dag(events, transfers, symbols):
         }
 
         if s['address'] not in POOLS['PANCAKE_V3']:
-            logging.warning(f"Missing UNI_V3/PANCAKE_V3 pool {s['address']}")
-            logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
+            logging.warning(f"Missing PANCAKE_V3 pool {s['address']}")
             t0, t1 = get_uni_v3_pool_data(s['address'])
             POOLS['PANCAKE_V3'][s['address']] = {
                 "0": t0,
@@ -435,6 +433,42 @@ def generate_swap_dag(events, transfers, symbols):
         }
         swaps.append(swap)
 
+    # Copypaste UNI V2
+    for s in kyber_swaps:
+        swap = {
+            'pool_address': s['address'],
+            'protocol': 'uni_v2',
+            'from': s['args']['sender'],
+            'to': s['args']['to'],
+            'log_index': s['logIndex']
+        }
+
+        if s['address'] not in POOLS['KYBER']:
+            logging.warning(f"Missing KYBER pool {s['address']}")
+            t0, t1 = get_uni_v2_pool_data(s['address'])
+            POOLS['KYBER'][s['address']] = {
+                "0": t0,
+                "1": t1}
+            save_pool_cache(POOLS)
+        else:
+            t0 = POOLS['KYBER'][s['address']]['0']
+            t1 = POOLS['KYBER'][s['address']]['1']
+
+        if s['args']['amount0In'] > 0 and s['args']['amount1In'] == 0:
+            swap['token_in'] = t0
+            swap['amount_in'] = s['args']['amount0In']
+            swap['token_out'] = t1
+            swap['amount_out'] = s['args']['amount1Out']
+        elif s['args']['amount1In'] > 0 and s['args']['amount0In'] == 0:
+            swap['token_in'] = t1
+            swap['amount_in'] = s['args']['amount1In']
+            swap['token_out'] = t0
+            swap['amount_out'] = s['args']['amount0Out']
+        else:
+            logging.warning('SUSPICIOUS KYBER SWAP')
+            continue
+        swaps.append(swap)
+
     # Filthy
     swaps_with_symbols = []
     if symbols:
@@ -442,21 +476,23 @@ def generate_swap_dag(events, transfers, symbols):
             symbol_in = TOKENS.get(s_['token_in'])
             if symbol_in is None:
                 logging.warning(f"Unknown token {s_['token_in']}")
-                token = w3.eth.contract(address=s_['toklen_in'], abi=ERC20)
+                token = w3.eth.contract(address=s_['token_in'], abi=ERC20)
                 symbol = token.functions.symbol().call()
                 TOKENS[s_['token_in']] = symbol
                 save_token_cache(TOKENS)
                 logging.info(f"Added token {symbol} to cache")
+                s_['token_in'] = symbol
             else:
                 s_['token_in'] = symbol_in
             symbol_out = TOKENS.get(s_['token_out'])
             if symbol_out is None:
                 logging.warning(f"Unknown token {s_['token_out']}")
-                token = w3.eth.contract(address=s_['toklen_out'], abi=ERC20)
+                token = w3.eth.contract(address=s_['token_out'], abi=ERC20)
                 symbol = token.functions.symbol().call()
                 TOKENS[s_['token_out']] = symbol
                 save_token_cache(TOKENS)
                 logging.info(f"Added token {symbol} to cache")
+                s_['token_out'] = symbol
             else:
                 s_['token_out'] = symbol_out
             swaps_with_symbols.append(s_)
