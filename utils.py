@@ -2,11 +2,19 @@ import json
 import logging
 
 from abis import UNI_V2, UNI_V3
+from token_abis import ERC20
 from web3_provider import w3
 
-with open('data/token_cache.json', 'r') as f:
-    TOKENS = json.load(f)
-    INVERTED_TOKENS = {v: k for k, v in TOKENS.items()}
+
+def load_token_cache():
+    with open('data/token_cache.json', 'r') as f:
+        cache = json.load(f)
+    return cache
+
+
+def save_token_cache(cache):
+    with open('data/token_cache.json', 'w') as f:
+        json.dump(cache, f, indent=4)
 
 
 def load_pool_cache():
@@ -15,8 +23,13 @@ def load_pool_cache():
     return cache
 
 
-POOLS = load_pool_cache()
+def save_pool_cache(cache):
+    with open('data/pool_cache.json', 'w') as f:
+        json.dump(cache, f, indent=4)
 
+
+POOLS = load_pool_cache()
+TOKENS = load_token_cache()
 
 def get_uni_v3_pool_data(address):
     pool = w3.eth.contract(address=address, abi=UNI_V3)
@@ -175,6 +188,10 @@ def generate_swap_dag(events, transfers, symbols):
             logging.warning(f"Missing UNI_V2 pool {s['address']}")
             logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
             t0, t1 = get_uni_v2_pool_data(s['address'])
+            POOLS['UNI_V2'][s['address']] = {
+                "0": t0,
+                "1": t1}
+            save_pool_cache(POOLS)
         else:
             t0 = POOLS['UNI_V2'][s['address']]['0']
             t1 = POOLS['UNI_V2'][s['address']]['1']
@@ -207,6 +224,10 @@ def generate_swap_dag(events, transfers, symbols):
             logging.warning(f"Missing UNI_V3/PANCAKE_V3 pool {s['address']}")
             logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
             t0, t1 = get_uni_v3_pool_data(s['address'])
+            POOLS['UNI_V3'][s['address']] = {
+                "0": t0,
+                "1": t1}
+            save_pool_cache(POOLS)
         else:
             t0 = POOLS['UNI_V3'][s['address']]['0']
             t1 = POOLS['UNI_V3'][s['address']]['1']
@@ -239,6 +260,11 @@ def generate_swap_dag(events, transfers, symbols):
             logging.warning(f"Missing UNI_V3/PANCAKE_V3 pool {s['address']}")
             logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
             t0, t1 = get_uni_v3_pool_data(s['address'])
+            POOLS['PANCAKE_V3'][s['address']] = {
+                "0": t0,
+                "1": t1}
+            save_pool_cache(POOLS)
+
         else:
             t0 = POOLS['PANCAKE_V3'][s['address']]['0']
             t1 = POOLS['PANCAKE_V3'][s['address']]['1']
@@ -410,20 +436,30 @@ def generate_swap_dag(events, transfers, symbols):
         swaps.append(swap)
 
     # Filthy
-    inverted = []
+    swaps_with_symbols = []
     if symbols:
         for s_ in swaps:
-            symbol_in = INVERTED_TOKENS.get(s_['token_in'])
+            symbol_in = TOKENS.get(s_['token_in'])
             if symbol_in is None:
                 logging.warning(f"Unknown token {s_['token_in']}")
+                token = w3.eth.contract(address=s_['toklen_in'], abi=ERC20)
+                symbol = token.functions.symbol().call()
+                TOKENS[s_['token_in']] = symbol
+                save_token_cache(TOKENS)
+                logging.info(f"Added token {symbol} to cache")
             else:
                 s_['token_in'] = symbol_in
-            symbol_out = INVERTED_TOKENS.get(s_['token_out'])
+            symbol_out = TOKENS.get(s_['token_out'])
             if symbol_out is None:
                 logging.warning(f"Unknown token {s_['token_out']}")
+                token = w3.eth.contract(address=s_['toklen_out'], abi=ERC20)
+                symbol = token.functions.symbol().call()
+                TOKENS[s_['token_out']] = symbol
+                save_token_cache(TOKENS)
+                logging.info(f"Added token {symbol} to cache")
             else:
                 s_['token_out'] = symbol_out
-            inverted.append(s_)
-        return inverted
+            swaps_with_symbols.append(s_)
+        return swaps_with_symbols
 
     return swaps

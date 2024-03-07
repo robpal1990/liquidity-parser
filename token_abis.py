@@ -45,15 +45,15 @@ STETH = [
     {
         "anonymous": False,
         "inputs": [{
-                       "indexed": True,
-                       "name": "sender",
-                       "type": "address"}, {
-                       "indexed": False,
-                       "name": "amount",
-                       "type": "uint256"}, {
-                       "indexed": False,
-                       "name": "referral",
-                       "type": "address"}],
+            "indexed": True,
+            "name": "sender",
+            "type": "address"}, {
+            "indexed": False,
+            "name": "amount",
+            "type": "uint256"}, {
+            "indexed": False,
+            "name": "referral",
+            "type": "address"}],
         "name": "Submitted",
         "type": "event"}
 ]
@@ -322,5 +322,15 @@ ERC20 = [
         ],
         "name": "Transfer",
         "type": "event"
-    }
+    },
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [{
+                        "name": "",
+                        "type": "string"}],
+        "payable": False,
+        "stateMutability": "view",
+        "type": "function"}
 ]
