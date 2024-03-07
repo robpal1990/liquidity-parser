@@ -2,19 +2,20 @@ import json
 import logging
 
 from abis import UNI_V2, UNI_V3
-from addresses import TOKENS
 from web3_provider import w3
 
-INVERTED_TOKENS = {v: k for k, v in TOKENS.items()}
+with open('data/token_cache.json', 'r') as f:
+    TOKENS = json.load(f)
+    INVERTED_TOKENS = {v: k for k, v in TOKENS.items()}
 
 
 def load_pool_cache():
-    with open('pool_cache.json', 'r') as f:
+    with open('data/pool_cache.json', 'r') as f:
         cache = json.load(f)
     return cache
 
 
-CACHE = load_pool_cache()
+POOLS = load_pool_cache()
 
 
 def get_uni_v3_pool_data(address):
@@ -41,7 +42,8 @@ def generate_swap_dag(events, transfers, symbols):
     curve_v1_swaps = events.get('CURVE_V1', [])
     curve_v2_swaps = events.get('CURVE_V2', [])
     uni_v2_swaps = events.get('UNI_V2', [])
-    uni_v3_swaps = events.get('UNI_V3', ()) + events.get('PANCAKE_V3', ())  # Filthy
+    uni_v3_swaps = events.get('UNI_V3', [])
+    pancake_v3_swaps = events.get('PANCAKE_V3', [])
     snx_swaps = events.get('SNX', [])
     integral_swaps = events.get('INTEGRAL', [])
     balancer_v1_swaps = events.get('BALANCER_V1', [])
@@ -100,9 +102,9 @@ def generate_swap_dag(events, transfers, symbols):
         swap = {
             'pool_address': s['address'],
             'protocol': 'synapse',
-            'token_in': CACHE['SYNAPSE'][s['address']][str(s['args']['soldId'])],
+            'token_in': POOLS['SYNAPSE'][s['address']][str(s['args']['soldId'])],
             'amount_in': s['args']['tokensSold'],
-            'token_out': CACHE['SYNAPSE'][s['address']][str(s['args']['boughtId'])],
+            'token_out': POOLS['SYNAPSE'][s['address']][str(s['args']['boughtId'])],
             'amount_out': s['args']['tokensBought'],
             'from': s['args']['buyer'],
             'to': s['args']['buyer'],
@@ -125,16 +127,16 @@ def generate_swap_dag(events, transfers, symbols):
         swaps.append(swap)
 
     for s in curve_v1_swaps:
-        if s['address'] not in CACHE['CURVE_V1']:
+        if s['address'] not in POOLS['CURVE_V1']:
             logging.warning(f"Missing CURVE_V1 pool {s['address']}")
             continue
 
         swap = {
             'pool_address': s['address'],
             'protocol': 'curve_v1',
-            'token_in': CACHE['CURVE_V1'][s['address']][str(s['args']['sold_id'])],
+            'token_in': POOLS['CURVE_V1'][s['address']][str(s['args']['sold_id'])],
             'amount_in': s['args']['tokens_sold'],
-            'token_out': CACHE['CURVE_V1'][s['address']][str(s['args']['bought_id'])],
+            'token_out': POOLS['CURVE_V1'][s['address']][str(s['args']['bought_id'])],
             'amount_out': s['args']['tokens_bought'],
             'from': s['args']['buyer'],
             'to': s['args']['buyer'],
@@ -143,16 +145,16 @@ def generate_swap_dag(events, transfers, symbols):
         swaps.append(swap)
 
     for s in curve_v2_swaps:
-        if s['address'] not in CACHE['CURVE_V2']:
+        if s['address'] not in POOLS['CURVE_V2']:
             logging.warning(f"Missing CURVE_V2 pool {s['address']}")
             continue
 
         swap = {
             'pool_address': s['address'],
             'protocol': 'curve_v2',
-            'token_in': CACHE['CURVE_V2'][s['address']][str(s['args']['sold_id'])],
+            'token_in': POOLS['CURVE_V2'][s['address']][str(s['args']['sold_id'])],
             'amount_in': s['args']['tokens_sold'],
-            'token_out': CACHE['CURVE_V2'][s['address']][str(s['args']['bought_id'])],
+            'token_out': POOLS['CURVE_V2'][s['address']][str(s['args']['bought_id'])],
             'amount_out': s['args']['tokens_bought'],
             'from': s['args']['buyer'],
             'to': s['args']['buyer'],
@@ -169,13 +171,13 @@ def generate_swap_dag(events, transfers, symbols):
             'log_index': s['logIndex']
         }
 
-        if s['address'] not in CACHE['UNI_V2']:
+        if s['address'] not in POOLS['UNI_V2']:
             logging.warning(f"Missing UNI_V2 pool {s['address']}")
             logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
             t0, t1 = get_uni_v2_pool_data(s['address'])
         else:
-            t0 = CACHE['UNI_V2'][s['address']]['0']
-            t1 = CACHE['UNI_V2'][s['address']]['1']
+            t0 = POOLS['UNI_V2'][s['address']]['0']
+            t1 = POOLS['UNI_V2'][s['address']]['1']
 
         if s['args']['amount0In'] > 0 and s['args']['amount1In'] == 0:
             swap['token_in'] = t0
@@ -192,27 +194,54 @@ def generate_swap_dag(events, transfers, symbols):
             continue
         swaps.append(swap)
 
-    merged_cache = CACHE['PANCAKE_V3'] | CACHE['UNI_V3']
     for s in uni_v3_swaps:
         swap = {
             'pool_address': s['address'],
+            'protocol': 'uni_v3',
             'from': s['args']['sender'],
             'to': s['args']['recipient'],
             'log_index': s['logIndex']
         }
 
-        if 'protocolFeesToken0' in s['args']:
-            swap['protocol'] = 'pancake_v3'
-        else:
-            swap['protocol'] = 'uni_v3'
-
-        if s['address'] not in merged_cache:
+        if s['address'] not in POOLS['UNI_V3']:
             logging.warning(f"Missing UNI_V3/PANCAKE_V3 pool {s['address']}")
             logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
             t0, t1 = get_uni_v3_pool_data(s['address'])
         else:
-            t0 = merged_cache[s['address']]['0']
-            t1 = merged_cache[s['address']]['1']
+            t0 = POOLS['UNI_V3'][s['address']]['0']
+            t1 = POOLS['UNI_V3'][s['address']]['1']
+
+        if s['args']['amount0'] > 0 > s['args']['amount1']:
+            swap['token_in'] = t0
+            swap['amount_in'] = s['args']['amount0']
+            swap['token_out'] = t1
+            swap['amount_out'] = abs(s['args']['amount1'])
+        elif s['args']['amount1'] > 0 > s['args']['amount0']:
+            swap['token_in'] = t1
+            swap['amount_in'] = s['args']['amount1']
+            swap['token_out'] = t0
+            swap['amount_out'] = abs(s['args']['amount0'])
+        else:
+            logging.warning('SUSPICIOUS UNI_V3 SWAP')
+            continue
+        swaps.append(swap)
+
+    for s in pancake_v3_swaps:
+        swap = {
+            'pool_address': s['address'],
+            'protocol': 'pancake_v3',
+            'from': s['args']['sender'],
+            'to': s['args']['recipient'],
+            'log_index': s['logIndex']
+        }
+
+        if s['address'] not in POOLS['PANCAKE_V3']:
+            logging.warning(f"Missing UNI_V3/PANCAKE_V3 pool {s['address']}")
+            logging.info(f"Fetching tokens for UNI_V3 pool {s['address']}")
+            t0, t1 = get_uni_v3_pool_data(s['address'])
+        else:
+            t0 = POOLS['PANCAKE_V3'][s['address']]['0']
+            t1 = POOLS['PANCAKE_V3'][s['address']]['1']
 
         if s['args']['amount0'] > 0 > s['args']['amount1']:
             swap['token_in'] = t0
@@ -297,7 +326,7 @@ def generate_swap_dag(events, transfers, symbols):
         swaps.append(swap)
 
     for s in dodo_swaps:
-        if s['address'] not in CACHE['DODO']:
+        if s['address'] not in POOLS['DODO']:
             logging.warning(f"Missing DODO pool {s['address']}")
             continue
 
@@ -308,16 +337,16 @@ def generate_swap_dag(events, transfers, symbols):
         }
 
         if s['event'] == 'BuyBaseToken':
-            swap['token_in'] = CACHE['DODO'][s['address']]["1"]
+            swap['token_in'] = POOLS['DODO'][s['address']]["1"]
             swap['amount_in'] = s['args']['payQuote']
-            swap['token_out'] = CACHE['DODO'][s['address']]["0"]
+            swap['token_out'] = POOLS['DODO'][s['address']]["0"]
             swap['amount_out'] = s['args']['receiveBase']
             swap['from'] = s['args']['buyer']
             swap['to'] = s['args']['buyer']
         elif s['event'] == 'SellBaseToken':
-            swap['token_in'] = CACHE['DODO'][s['address']]["0"]
+            swap['token_in'] = POOLS['DODO'][s['address']]["0"]
             swap['amount_in'] = s['args']['payBase']
-            swap['token_out'] = CACHE['DODO'][s['address']]["1"]
+            swap['token_out'] = POOLS['DODO'][s['address']]["1"]
             swap['amount_out'] = s['args']['receiveQuote']
             swap['from'] = s['args']['seller']
             swap['to'] = s['args']['seller']
@@ -327,7 +356,7 @@ def generate_swap_dag(events, transfers, symbols):
         swaps.append(swap)
 
     for s in mav_v1_swaps:
-        if s['address'] not in CACHE['MAV_V1']:
+        if s['address'] not in POOLS['MAV_V1']:
             logging.warning(f"Missing MAV_V1 pool {s['address']}")
             continue
 
@@ -345,11 +374,11 @@ def generate_swap_dag(events, transfers, symbols):
         }
 
         if s['args']['tokenAIn']:
-            swap['token_in'] = CACHE['MAV_V1'][s['address']]["0"]
-            swap['token_out'] = CACHE['MAV_V1'][s['address']]["1"]
+            swap['token_in'] = POOLS['MAV_V1'][s['address']]["0"]
+            swap['token_out'] = POOLS['MAV_V1'][s['address']]["1"]
         else:
-            swap['token_in'] = CACHE['MAV_V1'][s['address']]["1"]
-            swap['token_out'] = CACHE['MAV_V1'][s['address']]["0"]
+            swap['token_in'] = POOLS['MAV_V1'][s['address']]["1"]
+            swap['token_out'] = POOLS['MAV_V1'][s['address']]["0"]
         swaps.append(swap)
 
     for s in bancor_swaps:

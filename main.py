@@ -50,7 +50,7 @@ SNX = w3.eth.contract(address=None, abi=SNX)
 
 
 def load_pool_cache():
-    with open('pool_cache.json', 'r') as f:
+    with open('data/pool_cache.json', 'r') as f:
         cache = json.load(f)
     return cache
 
@@ -628,7 +628,7 @@ def main():
 
     # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
-    receipt = w3.eth.get_transaction_receipt('0x2d4db758e6b75fa1c20a8a96a171a104aa5f808f3d488681433e9a4e278fba55')
+    receipt = w3.eth.get_transaction_receipt('0x0bb85d4fc3af33fab1dbe2730a38871f4b955d7ab444568b0c241d4f2ef23838')
     transfers = extract_erc20_transfers(receipt)
     swaps = extract_swaps(receipt)
     dag = generate_swap_dag(swaps, transfers, symbols=True)
@@ -639,7 +639,7 @@ def main():
     ipdb.set_trace()
 
     for i, r in data.iterrows():
-        if i < 130:
+        if i < 300:
             continue
         tx_hash = r['tx_hash']
         logging.info(f"Processing transaction {i}: {tx_hash}")
