@@ -5,19 +5,26 @@ from collections import defaultdict
 from pprint import pprint
 
 import pandas as pd
+
+from data.logger import CustomFormatter
 from web3_provider import w3
 
 from abis import AAVE_LENDING_V2
 from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL
 from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, PANCAKE_V3, \
     SYNAPSE, BANCOR, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, \
-    ONEINCH_LIMIT, INTEGRAL, SNX, BEBOP_RFQ, NATIVE_V1, DEFI_PLAZA, MSTABLE
+    ONEINCH_LIMIT, INTEGRAL, SNX, BEBOP_RFQ, NATIVE_V1, DEFI_PLAZA, MSTABLE, SMOOTHY_V1, FIXED_RATE
 from token_abis import STETH, RETH, SFRXETH, AAVE_TOKEN, ERC20
 from utils import generate_swap_dag
 
 warnings.filterwarnings("ignore")
 
-logging.getLogger("web3").setLevel(logging.CRITICAL)
+logger = logging.getLogger("WEB3")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+logger.addHandler(ch)
 
 BALANCER_V1 = w3.eth.contract(address=None, abi=BALANCER_V1)
 BALANCER_V2 = w3.eth.contract(address=None, abi=BALANCER_V2)  # Also SWAAP_V2
@@ -47,6 +54,8 @@ BEBOP_RFQ = w3.eth.contract(address=None, abi=BEBOP_RFQ)
 NATIVE_V1 = w3.eth.contract(address=None, abi=NATIVE_V1)
 INTEGRAL = w3.eth.contract(address=None, abi=INTEGRAL)
 SNX = w3.eth.contract(address=None, abi=SNX)
+SMOOTHY_V1 = w3.eth.contract(address=None, abi=SMOOTHY_V1)
+FIXED_RATE = w3.eth.contract(address=None, abi=FIXED_RATE)
 
 
 def load_pool_cache():
@@ -308,7 +317,7 @@ def get_steth_actions(r_):
             assert wsteth_log['args']['to'] == from_
         else:  # stETH gets sent from ZERO, means it just got minted and wstETH transfer will be AFTER
             next_ = [e for e in transfers if e['logIndex'] > wrap['logIndex']
-                        and e['address'] == TOKENS['wstETH']]
+                     and e['address'] == TOKENS['wstETH']]
             assert len(next_) > 0
             wsteth_log = next_[0]
         wrap_action = {
@@ -385,9 +394,9 @@ def get_snx_actions(r_):
         from_address = TOKENS.get(from_token)
         to_address = TOKENS.get(to_token)
         if from_address is None:
-            logging.info(f"Missing token {from_address}")
+            logger.info(f"Missing token {from_address}")
         if to_address is None:
-            logging.info(f"Missing token {to_address}")
+            logger.info(f"Missing token {to_address}")
         swap = {
             'pool_address': s_['address'],
             'token_in': from_address,
@@ -498,8 +507,8 @@ def get_sdai_actions(r_):
     token = w3.eth.contract(address=TOKENS['sfrxETH'], abi=SFRXETH)
     deposits = token.events.Deposit().process_receipt(r_)
     deposits = [d for d in deposits if d['address'] == '0x83F20F44975D03b1b09e64809B757c47f942BEeA']
-    # withdrawals = token.events.Withdraw().process_receipt(r_)
-    # withdrawals = [w for w in withdrawals if w['address'] == '0x83F20F44975D03b1b09e64809B757c47f942BEeA']
+    withdrawals = token.events.Withdraw().process_receipt(r_)
+    withdrawals = [w for w in withdrawals if w['address'] == '0x83F20F44975D03b1b09e64809B757c47f942BEeA']
     swaps = []
     for d in deposits:
         action = {
@@ -515,6 +524,21 @@ def get_sdai_actions(r_):
             'log_index': d['logIndex']
         }
         swaps.append(action)
+
+    for w in withdrawals:
+        action = {
+            'pool_address': '0x83F20F44975D03b1b09e64809B757c47f942BEeA',
+            'protocol': 'sdai_burn',
+            'token_in': '0x83F20F44975D03b1b09e64809B757c47f942BEeA',
+            'amount_in': w['args']['shares'],
+            'token_out': TOKENS['DAI'],
+            'amount_out': w['args']['assets'],
+            'from': w['args']['caller'],
+            'to': w['args']['receiver'],
+            'log_index': w['logIndex']
+        }
+        swaps.append(action)
+
     return swaps
 
 
@@ -543,11 +567,6 @@ def get_reth_actions(r_):
 def get_mkusd_actions(r_):
     # 0x1b75c69fb1e599ce4067b772d79bf926a98f4f2e409c83817a53567b2bdbb9c1
     pass
-
-
-# def get_sdai_actions(r_):
-#     # 0x0c067dc4d141e2476eed2653d99c840e9537daac3363dc94eb2d489719658f24
-#     pass
 
 
 def extract_erc20_transfers(receipt):
@@ -616,44 +635,49 @@ def extract_swaps(r):
         'FRXETH': get_frxeth_actions(r),
         'NATIVE_V1': get_native_rfq(r),
         'STETH': get_steth_actions(r),
-        'SDAI': get_sdai_actions(r)
+        'SDAI': get_sdai_actions(r),
+        'SMOOTHY_V1': SMOOTHY_V1.events.Swap().process_receipt(r),
+        'FIXED_RATE': FIXED_RATE.events.Swap().process_receipt(r),
     }
 
     # aave_actions = get_aave_actions(r)
     # swap_events['AAVE_ACTIONS'] = get_aave_actions(r)
-
     return {k: v for k, v in swap_events.items() if v}
 
 
 def main():
-    logging.info('Loading data')
-    data = pd.read_csv('/home/robert/Projects/liquidity-parser/1inch_agg.csv')
-    # logging.info('Data loaded')
+    logger.info('Loading data')
+    data = pd.read_csv('/home/robert/Projects/liquidity-parser/1inch2.csv')
+    data = data[~((data['src_token_symbol'].isin(['WETH', 'ETH'])) & (data['src_token_symbol'].isin(['WETH', 'ETH'])))]
+    data = data[
+        data['tx_to'].isin(['0x1111111254eeb25477b68fb85ed929f73a960582', '0xad3b67bca8935cb510c8d18bd45f0b94f54a968f',
+                           '0x111111125421ca6dc452d289314280a0f8842a65'])]
+    # logger.info('Data loaded')
     cache = load_pool_cache()
     pools_cached = set([k for v in cache.values() for k in v.keys()])
 
     # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
-    # receipt = w3.eth.get_transaction_receipt('0xf584c55338ffa4c269d632bd55f86cc1df0b8bbaf3b0d69028df1a36f1851fe5')
-    # transfers = extract_erc20_transfers(receipt)
-    # swaps = extract_swaps(receipt)
-    # dag = generate_swap_dag(swaps, transfers, symbols=True)
-    # logging.info(f"Protocols used:{list(swaps.keys())}")
-    # pprint(dag)
-    # pprint(dict(tally_dag(dag)))
-    # import ipdb;
-    # ipdb.set_trace()
+    receipt = w3.eth.get_transaction_receipt(' 0x8d0b62dcff1a2a21bc1bbfa71c7665d693718e793b53c00305d63678314732a8')
+    transfers = extract_erc20_transfers(receipt)
+    swaps = extract_swaps(receipt)
+    dag = generate_swap_dag(swaps, transfers, symbols=True)
+    logger.info(f"Protocols used:{list(swaps.keys())}")
+    pprint(dag)
+    pprint(dict(tally_dag(dag)))
+    import ipdb;
+    ipdb.set_trace()
 
     for i, r in data.iterrows():
-        if i < 550:
+        if i < 2800:
             continue
         tx_hash = r['tx_hash']
-        logging.info(f"Processing transaction {i}: {tx_hash}")
+        logger.info(f"Processing transaction {i}: {tx_hash}, volume {int(r['amount_usd'])} USD")
         receipt = w3.eth.get_transaction_receipt(r['tx_hash'])
         swaps = extract_swaps(receipt)
         transfers = extract_erc20_transfers(receipt)
         dag = generate_swap_dag(swaps, transfers, symbols=True)
-        logging.info(f"Protocols used:{swaps.keys()}")
+        logger.info(f"Protocols used:{swaps.keys()}")
         pprint(dict(tally_dag(dag)))
 
     import ipdb;
@@ -661,5 +685,5 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(encoding='utf-8', level=logging.INFO)
+    # logging.basicConfig(encoding='utf-8', level=logging.INFO)
     main()

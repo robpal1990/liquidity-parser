@@ -1203,3 +1203,47 @@ MSTABLE = [{
         "type": "address"}],
     "name": "Swapped",
     "type": "event"}]
+
+SMOOTHY_V1 = [{
+    "anonymous": False,
+    "inputs": [{
+        "indexed": True,
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "bTokenIdIn",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "bTokenIdOut",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "inAmount",
+        "type": "uint256"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "outAmount",
+        "type": "uint256"}],
+    "name": "Swap",
+    "type": "event"}]
+
+FIXED_RATE = [{
+    "anonymous": False,
+    "inputs": [{
+        "indexed": True,
+        "internalType": "address",
+        "name": "trader",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "int256",
+        "name": "token0Amount",
+        "type": "int256"}, {
+        "indexed": False,
+        "internalType": "int256",
+        "name": "token1Amount",
+        "type": "int256"}],
+    "name": "Swap",
+    "type": "event"}]

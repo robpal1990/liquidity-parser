@@ -1,7 +1,10 @@
 import json
 import logging
 
+import ipdb
+
 from abis import UNI_V2, UNI_V3
+from data.logger import CustomFormatter
 from token_abis import ERC20
 from web3_provider import w3
 
@@ -30,6 +33,14 @@ def save_pool_cache(cache):
 
 POOLS = load_pool_cache()
 TOKENS = load_token_cache()
+
+logger = logging.getLogger("DAG")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+logger.addHandler(ch)
+
 
 def get_uni_v3_pool_data(address):
     pool = w3.eth.contract(address=address, abi=UNI_V3)
@@ -72,6 +83,8 @@ def generate_swap_dag(events, transfers, symbols):
     defi_plaza_swaps = events.get('DEFI_PLAZA', [])
     mstable_swaps = events.get('MSTABLE', [])
     kyber_swaps = events.get('KYBER', [])
+    smoothy_v1_swaps = events.get('SMOOTHY_V1', [])
+    fixed_rate_swaps = events.get('FIXED_RATE', [])
 
     reth_swaps = events.get('RETH', [])
     frxeth_swaps = events.get('FRXETH', [])
@@ -142,7 +155,7 @@ def generate_swap_dag(events, transfers, symbols):
 
     for s in curve_v1_swaps:
         if s['address'] not in POOLS['CURVE_V1']:
-            logging.warning(f"Missing CURVE_V1 pool {s['address']}")
+            logger.warning(f"Missing CURVE_V1 pool {s['address']}")
             continue
 
         swap = {
@@ -160,7 +173,7 @@ def generate_swap_dag(events, transfers, symbols):
 
     for s in curve_v2_swaps:
         if s['address'] not in POOLS['CURVE_V2']:
-            logging.warning(f"Missing CURVE_V2 pool {s['address']}")
+            logger.warning(f"Missing CURVE_V2 pool {s['address']}")
             continue
 
         swap = {
@@ -186,7 +199,7 @@ def generate_swap_dag(events, transfers, symbols):
         }
 
         if s['address'] not in POOLS['UNI_V2']:
-            logging.warning(f"Missing UNI_V2 pool {s['address']}")
+            logger.warning(f"Missing UNI_V2 pool {s['address']}")
             t0, t1 = get_uni_v2_pool_data(s['address'])
             POOLS['UNI_V2'][s['address']] = {
                 "0": t0,
@@ -207,7 +220,7 @@ def generate_swap_dag(events, transfers, symbols):
             swap['token_out'] = t0
             swap['amount_out'] = s['args']['amount0Out']
         else:
-            logging.warning('SUSPICIOUS UNI_V2 SWAP')
+            logger.warning('SUSPICIOUS UNI_V2 SWAP')
             continue
         swaps.append(swap)
 
@@ -221,7 +234,7 @@ def generate_swap_dag(events, transfers, symbols):
         }
 
         if s['address'] not in POOLS['UNI_V3']:
-            logging.warning(f"Missing UNI_V3 pool {s['address']}")
+            logger.warning(f"Missing UNI_V3 pool {s['address']}")
             t0, t1 = get_uni_v3_pool_data(s['address'])
             POOLS['UNI_V3'][s['address']] = {
                 "0": t0,
@@ -242,7 +255,7 @@ def generate_swap_dag(events, transfers, symbols):
             swap['token_out'] = t0
             swap['amount_out'] = abs(s['args']['amount0'])
         else:
-            logging.warning('SUSPICIOUS UNI_V3 SWAP')
+            logger.warning('SUSPICIOUS UNI_V3 SWAP')
             continue
         swaps.append(swap)
 
@@ -256,7 +269,7 @@ def generate_swap_dag(events, transfers, symbols):
         }
 
         if s['address'] not in POOLS['PANCAKE_V3']:
-            logging.warning(f"Missing PANCAKE_V3 pool {s['address']}")
+            logger.warning(f"Missing PANCAKE_V3 pool {s['address']}")
             t0, t1 = get_uni_v3_pool_data(s['address'])
             POOLS['PANCAKE_V3'][s['address']] = {
                 "0": t0,
@@ -278,7 +291,7 @@ def generate_swap_dag(events, transfers, symbols):
             swap['token_out'] = t0
             swap['amount_out'] = abs(s['args']['amount0'])
         else:
-            logging.warning('SUSPICIOUS UNI_V3 SWAP')
+            logger.warning('SUSPICIOUS UNI_V3 SWAP')
             continue
         swaps.append(swap)
 
@@ -351,7 +364,7 @@ def generate_swap_dag(events, transfers, symbols):
 
     for s in dodo_swaps:
         if s['address'] not in POOLS['DODO']:
-            logging.warning(f"Missing DODO pool {s['address']}")
+            logger.warning(f"Missing DODO pool {s['address']}")
             continue
 
         swap = {
@@ -375,13 +388,13 @@ def generate_swap_dag(events, transfers, symbols):
             swap['from'] = s['args']['seller']
             swap['to'] = s['args']['seller']
         else:
-            logging.warning('SUSPICIOUS DODO SWAP')
+            logger.warning('SUSPICIOUS DODO SWAP')
             continue
         swaps.append(swap)
 
     for s in mav_v1_swaps:
         if s['address'] not in POOLS['MAV_V1']:
-            logging.warning(f"Missing MAV_V1 pool {s['address']}")
+            logger.warning(f"Missing MAV_V1 pool {s['address']}")
             continue
 
         swap = {
@@ -444,7 +457,7 @@ def generate_swap_dag(events, transfers, symbols):
         }
 
         if s['address'] not in POOLS['KYBER']:
-            logging.warning(f"Missing KYBER pool {s['address']}")
+            logger.warning(f"Missing KYBER pool {s['address']}")
             t0, t1 = get_uni_v2_pool_data(s['address'])
             POOLS['KYBER'][s['address']] = {
                 "0": t0,
@@ -465,33 +478,88 @@ def generate_swap_dag(events, transfers, symbols):
             swap['token_out'] = t0
             swap['amount_out'] = s['args']['amount0Out']
         else:
-            logging.warning('SUSPICIOUS KYBER SWAP')
+            logger.warning('SUSPICIOUS KYBER SWAP')
             continue
+        swaps.append(swap)
+
+    for s in smoothy_v1_swaps:
+        if s['address'] not in POOLS['SMOOTHY_V1']:
+            logger.warning(f"Missing SMOOTHY_V1 pool {s['address']}")
+            continue
+        swap = {
+            'pool_address': s['address'],
+            'protocol': 'smoothy_v1',
+            'token_in': POOLS['SMOOTHY_V1'][s['address']][str(s['args']['bTokenIdIn'])],
+            'amount_in': s['args']['inAmount'],
+            'token_out': POOLS['SMOOTHY_V1'][s['address']][str(s['args']['bTokenIdOut'])],
+            'amount_out': s['args']['outAmount'],
+            'from': s['args']['buyer'],
+            'to': s['args']['buyer'],
+            'log_index': s['logIndex']
+        }
+        swaps.append(swap)
+
+    for s in fixed_rate_swaps:
+        if s['address'] not in POOLS['FIXED_RATE']:
+            logger.warning(f"Missing SMOOTHY_V1 pool {s['address']}")
+            continue
+
+        swap = {
+            'pool_address': s['address'],
+            'protocol': 'fixed_rate',
+            'from': s['args']['trader'],
+            'to': s['args']['trader'],
+            'log_index': s['logIndex']
+        }
+
+        t0 = POOLS['FIXED_RATE'][s['address']]['0']
+        t1 = POOLS['FIXED_RATE'][s['address']]['1']
+
+        if s['args']['token0Amount'] > 0:
+            swap['token_in'] = t0
+            swap['amount_in'] = s['args']['token0Amount']
+            swap['token_out'] = t1
+            swap['amount_out'] = abs(s['args']['token1Amount'])
+        elif s['args']['token1Amount'] > 0:
+            swap['token_in'] = t1
+            swap['amount_in'] = s['args']['token1Amount']
+            swap['token_out'] = t0
+            swap['amount_out'] = abs(s['args']['token0Amount'])
+        else:
+            logger.warning('SUSPICIOUS FIXED_RATE SWAP')
+            continue
+        import ipdb; ipdb.set_trace()
         swaps.append(swap)
 
     # Filthy
     swaps_with_symbols = []
     if symbols:
         for s_ in swaps:
-            symbol_in = TOKENS.get(s_['token_in'])
+            symbol_in = TOKENS.get(s_['token_in'], {}).get('symbol')
             if symbol_in is None:
-                logging.warning(f"Unknown token {s_['token_in']}")
+                logger.warning(f"Unknown token {s_['token_in']}")
                 token = w3.eth.contract(address=s_['token_in'], abi=ERC20)
                 symbol = token.functions.symbol().call()
-                TOKENS[s_['token_in']] = symbol
+                decimals = token.functions.decimals().call()
+                TOKENS[s_['token_in']] = {
+                    "symbol": symbol,
+                    "decimals": decimals}
                 save_token_cache(TOKENS)
-                logging.info(f"Added token {symbol} to cache")
+                logger.info(f"Added token {symbol} to cache")
                 s_['token_in'] = symbol
             else:
                 s_['token_in'] = symbol_in
-            symbol_out = TOKENS.get(s_['token_out'])
+            symbol_out = TOKENS.get(s_['token_out'], {}).get('symbol')
             if symbol_out is None:
-                logging.warning(f"Unknown token {s_['token_out']}")
+                logger.warning(f"Unknown token {s_['token_out']}")
                 token = w3.eth.contract(address=s_['token_out'], abi=ERC20)
                 symbol = token.functions.symbol().call()
-                TOKENS[s_['token_out']] = symbol
+                decimals = token.functions.decimals().call()
+                TOKENS[s_['token_out']] = {
+                    "symbol": symbol,
+                    "decimals": decimals}
                 save_token_cache(TOKENS)
-                logging.info(f"Added token {symbol} to cache")
+                logger.info(f"Added token {symbol} to cache")
                 s_['token_out'] = symbol
             else:
                 s_['token_out'] = symbol_out

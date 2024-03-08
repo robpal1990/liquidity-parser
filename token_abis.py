@@ -328,9 +328,18 @@ ERC20 = [
         "inputs": [],
         "name": "symbol",
         "outputs": [{
-                        "name": "",
-                        "type": "string"}],
+            "name": "",
+            "type": "string"}],
         "payable": False,
         "stateMutability": "view",
+        "type": "function"},
+    {
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{
+                        "internalType": "uint8",
+                        "name": "",
+                        "type": "uint8"}],
+        "stateMutability": "pure",
         "type": "function"}
 ]

@@ -1,100 +1,674 @@
 {
-    "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": "stETH",
-    "0x6B175474E89094C44Da98b954EedeAC495271d0F": "DAI",
-    "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0": "wstETH",
-    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": "WETH",
-    "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE": "ETH",
-    "0xdAC17F958D2ee523a2206206994597C13D831ec7": "USDT",
-    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": "USDC",
-    "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": "WBTC",
-    "0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811": "aUSDT",
-    "0x028171bCA77440897B824Ca71D1c56caC55b68A3": "aDAI",
-    "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE": "aUSDC",
-    "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51": "sUSD",
-    "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb": "sETH",
-    "0x6982508145454Ce325dDbE47a25d4ec3d2311933": "PEPE",
-    "0xae78736Cd615f374D3085123A210448E74Fc6393": "rETH",
-    "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E": "crvUSD",
-    "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6": "sBTC",
-    "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D": "renBTC",
-    "0x853d955aCEf822Db058eb8505911ED77F175b99e": "FRAX",
-    "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0": "FXS",
-    "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490": "3Crv",
-    "0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd": "GUSD",
-    "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3": "USDe",
-    "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3": "MIM",
-    "0xac3E018457B222d93114458476f3E3416Abbe38F": "sfrxETH",
-    "0x5E8422345238F34275888049021821E8E08CAa1f": "frxETH",
-    "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7": "rsETH",
-    "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6": "pxETH",
-    "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28": "mkUSD",
-    "0x18084fbA666a33d37592fA2633fD49a74DD93a88": "tBTC",
-    "0x383E6b4437b59fff47B619CBA855CA29342A8559": "PayPool",
-    "0xD9A442856C234a39a81a089C06451EBAa4306a72": "pufETH",
-    "0x83F20F44975D03b1b09e64809B757c47f942BEeA": "sDAI",
-    "0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC": "crvFRAX",
-    "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee": "weETH",
-    "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704": "cbETH",
-    "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b": "ETHx",
-    "0xD533a949740bb3306d119CC777fa900bA034cd52": "CRV",
-    "0x8E870D67F660D95d5be530380D0eC0bd388289E1": "USDP",
-    "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0": "LUSD",
-    "0x0000000000085d4780B73119b644AE5ecd22b376": "TUSD",
-    "0xa2E3356610840701BDf5611a53974510Ae27E2e1": "wBETH",
-    "0xf951E335afb289353dc249e82926178EaC7DEd78": "swETH",
-    "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2": "MKR",
-    "0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3": "OETH",
-    "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0": "rswETH",
-    "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7": "cvxCRV",
-    "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2": "SUSHI",
-    "0x77E06c9eCCf2E797fd462A92B6D7642EF85b0A44": "wTAO",
-    "0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB": "COW",
-    "0x6810e776880C02933D47DB1b9fc05908e5386b96": "GNO",
-    "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984": "UNI",
-    "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3": "ONDO",
-    "0x046EeE2cc3188071C02BfC1745A6b17c656e3f3d": "RLB",
-    "0x5B7533812759B45C2B44C19e320ba2cD2681b542": "AGIX",
-    "0xe07F9D810a48ab5c3c914BA3cA53AF14E4491e8A": "GYD",
-    "0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39": "HEX",
-    "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32": "LDO",
-    "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24": "RNDR",
-    "0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E": "ILV",
-    "0x0F7B3F5a8FeD821c5eb60049538a548dB2D479ce": "ATOR",
-    "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D": "LQTY",
-    "0x590F820444fA3638e022776752c5eEF34E2F89A6": "ALPH",
-    "0xf819d9Cb1c2A819Fd991781A822dE3ca8607c3C9": "UNIBOT",
-    "0x66761Fa41377003622aEE3c7675Fc7b5c1C2FaC5": "CPOOL",
-    "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0": "MATIC",
-    "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6": "STG",
-    "0xc944E90C64B2c07662A292be6244BDf05Cda44a7": "GRT",
-    "0x92D6C1e31e14520e676a687F0a93788B716BEff5": "DYDX",
-    "0xfF20817765cB7f73d4bde2e66e067E58D11095C2": "AMP",
-    "0xc00e94Cb662C3520282E6f5717214004A7f26888": "COMP",
-    "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C": "BNT",
-    "0x102c776DDB30C754dEd4fDcC77A19230A60D4e4f": "FLC",
-    "0x79c58f70905F734641735BC61e45c19dD9Ad60bC": "USDC-DAI-USDT",
-    "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29": "SYN",
-    "0x808507121B80c02388fAd14726482e061B8da827": "PENDLE",
-    "0x9E9FbDE7C7a83c43913BddC8779158F1368F0413": "PANDORA",
-    "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE": "BEAM",
-    "0xD46bA6D942050d489DBd938a2C909A5d5039A161": "AMPL",
-    "0x3c3a81e81dc49A522A592e7622A7E711c06bf354": "MNT",
-    "0xBAac2B4491727D78D2b78815144570b9f2Fe8899": "DOG",
-    "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B": "CVX",
-    "0x35e78b3982E87ecfD5b3f3265B601c046cDBe232": "XAI",
-    "0xb23d80f5FefcDDaa212212F028021B41DEd428CF": "PRIME",
-    "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F": "SNX",
-    "0x8AB2ff0116A279a99950C66A12298962D152B83c": "ORDS",
-    "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110": "ezETH",
-    "0x9F52c8ecbEe10e00D9faaAc5Ee9Ba0fF6550F511": "SIPHER",
-    "0x514910771AF9Ca656af840dff83E8264EcF986CA": "LINK",
-    "0xe76C6c83af64e4C60245D8C7dE953DF673a7A33D": "RAIL",
-    "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72": "ENS",
-    "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5": "OHM",
-    "0x0001A500A6B18995B03f44bb040A5fFc28E45CB0": "OLAS",
-    "0x2ef8a2Ccb058915E00E16aA13Cc6E36F19D8893b": "VDO",
-    "0x97de57eC338AB5d51557DA3434828C5DbFaDA371": "eUSD",
-    "0x7dE91B204C1C737bcEe6F000AAA6569Cf7061cb7": "XRT",
-    "0xCa14007Eff0dB1f8135f4C25B34De49AB0d42766": "STRK",
-    "0xD31a59c85aE9D8edEFeC411D448f90841571b89c": "SOL"
+    "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": {
+        "symbol": "stETH",
+        "decimals": 18
+    },
+    "0x6B175474E89094C44Da98b954EedeAC495271d0F": {
+        "symbol": "DAI",
+        "decimals": 18
+    },
+    "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0": {
+        "symbol": "wstETH",
+        "decimals": 18
+    },
+    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
+        "symbol": "WETH",
+        "decimals": 18
+    },
+    "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE": {
+        "symbol": "ETH",
+        "decimals": 18
+    },
+    "0xdAC17F958D2ee523a2206206994597C13D831ec7": {
+        "symbol": "USDT",
+        "decimals": 6
+    },
+    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": {
+        "symbol": "USDC",
+        "decimals": 6
+    },
+    "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": {
+        "symbol": "WBTC",
+        "decimals": 8
+    },
+    "0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811": {
+        "symbol": "aUSDT",
+        "decimals": 6
+    },
+    "0x028171bCA77440897B824Ca71D1c56caC55b68A3": {
+        "symbol": "aDAI",
+        "decimals": 18
+    },
+    "0xBcca60bB61934080951369a648Fb03DF4F96263C": {
+        "symbol": "aUSDC",
+        "decimals": 6
+    },
+    "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51": {
+        "symbol": "sUSD",
+        "decimals": 18
+    },
+    "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb": {
+        "symbol": "sETH",
+        "decimals": 18
+    },
+    "0x6982508145454Ce325dDbE47a25d4ec3d2311933": {
+        "symbol": "PEPE",
+        "decimals": 18
+    },
+    "0xae78736Cd615f374D3085123A210448E74Fc6393": {
+        "symbol": "rETH",
+        "decimals": 18
+    },
+    "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E": {
+        "symbol": "crvUSD",
+        "decimals": 18
+    },
+    "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6": {
+        "symbol": "sBTC",
+        "decimals": 18
+    },
+    "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D": {
+        "symbol": "renBTC",
+        "decimals": 8
+    },
+    "0x853d955aCEf822Db058eb8505911ED77F175b99e": {
+        "symbol": "FRAX",
+        "decimals": 18
+    },
+    "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0": {
+        "symbol": "FXS",
+        "decimals": 18
+    },
+    "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490": {
+        "symbol": "3Crv",
+        "decimals": 18
+    },
+    "0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd": {
+        "symbol": "GUSD",
+        "decimals": 2
+    },
+    "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3": {
+        "symbol": "USDe",
+        "decimals": 18
+    },
+    "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3": {
+        "symbol": "MIM",
+        "decimals": 18
+    },
+    "0xac3E018457B222d93114458476f3E3416Abbe38F": {
+        "symbol": "sfrxETH",
+        "decimals": 18
+    },
+    "0x5E8422345238F34275888049021821E8E08CAa1f": {
+        "symbol": "frxETH",
+        "decimals": 18
+    },
+    "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7": {
+        "symbol": "rsETH",
+        "decimals": 18
+    },
+    "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6": {
+        "symbol": "pxETH",
+        "decimals": 18
+    },
+    "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28": {
+        "symbol": "mkUSD",
+        "decimals": 18
+    },
+    "0x18084fbA666a33d37592fA2633fD49a74DD93a88": {
+        "symbol": "tBTC",
+        "decimals": 18
+    },
+    "0x383E6b4437b59fff47B619CBA855CA29342A8559": {
+        "symbol": "PayPool",
+        "decimals": 18
+    },
+    "0xD9A442856C234a39a81a089C06451EBAa4306a72": {
+        "symbol": "pufETH",
+        "decimals": 18
+    },
+    "0x83F20F44975D03b1b09e64809B757c47f942BEeA": {
+        "symbol": "sDAI",
+        "decimals": 18
+    },
+    "0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC": {
+        "symbol": "crvFRAX",
+        "decimals": 18
+    },
+    "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee": {
+        "symbol": "weETH",
+        "decimals": 18
+    },
+    "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704": {
+        "symbol": "cbETH",
+        "decimals": 18
+    },
+    "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b": {
+        "symbol": "ETHx",
+        "decimals": 18
+    },
+    "0xD533a949740bb3306d119CC777fa900bA034cd52": {
+        "symbol": "CRV",
+        "decimals": 18
+    },
+    "0x8E870D67F660D95d5be530380D0eC0bd388289E1": {
+        "symbol": "USDP",
+        "decimals": 18
+    },
+    "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0": {
+        "symbol": "LUSD",
+        "decimals": 18
+    },
+    "0x0000000000085d4780B73119b644AE5ecd22b376": {
+        "symbol": "TUSD",
+        "decimals": 18
+    },
+    "0xa2E3356610840701BDf5611a53974510Ae27E2e1": {
+        "symbol": "wBETH",
+        "decimals": 18
+    },
+    "0xf951E335afb289353dc249e82926178EaC7DEd78": {
+        "symbol": "swETH",
+        "decimals": 18
+    },
+    "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2": {
+        "symbol": "MKR",
+        "decimals": 18
+    },
+    "0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3": {
+        "symbol": "OETH",
+        "decimals": 18
+    },
+    "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0": {
+        "symbol": "rswETH",
+        "decimals": 18
+    },
+    "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7": {
+        "symbol": "cvxCRV",
+        "decimals": 18
+    },
+    "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2": {
+        "symbol": "SUSHI",
+        "decimals": 18
+    },
+    "0x77E06c9eCCf2E797fd462A92B6D7642EF85b0A44": {
+        "symbol": "wTAO",
+        "decimals": 9
+    },
+    "0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB": {
+        "symbol": "COW",
+        "decimals": 18
+    },
+    "0x6810e776880C02933D47DB1b9fc05908e5386b96": {
+        "symbol": "GNO",
+        "decimals": 18
+    },
+    "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984": {
+        "symbol": "UNI",
+        "decimals": 18
+    },
+    "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3": {
+        "symbol": "ONDO",
+        "decimals": 18
+    },
+    "0x046EeE2cc3188071C02BfC1745A6b17c656e3f3d": {
+        "symbol": "RLB",
+        "decimals": 18
+    },
+    "0x5B7533812759B45C2B44C19e320ba2cD2681b542": {
+        "symbol": "AGIX",
+        "decimals": 8
+    },
+    "0xe07F9D810a48ab5c3c914BA3cA53AF14E4491e8A": {
+        "symbol": "GYD",
+        "decimals": 18
+    },
+    "0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39": {
+        "symbol": "HEX",
+        "decimals": 8
+    },
+    "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32": {
+        "symbol": "LDO",
+        "decimals": 18
+    },
+    "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24": {
+        "symbol": "RNDR",
+        "decimals": 18
+    },
+    "0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E": {
+        "symbol": "ILV",
+        "decimals": 18
+    },
+    "0x0F7B3F5a8FeD821c5eb60049538a548dB2D479ce": {
+        "symbol": "ATOR",
+        "decimals": 18
+    },
+    "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D": {
+        "symbol": "LQTY",
+        "decimals": 18
+    },
+    "0x590F820444fA3638e022776752c5eEF34E2F89A6": {
+        "symbol": "ALPH",
+        "decimals": 18
+    },
+    "0xf819d9Cb1c2A819Fd991781A822dE3ca8607c3C9": {
+        "symbol": "UNIBOT",
+        "decimals": 18
+    },
+    "0x66761Fa41377003622aEE3c7675Fc7b5c1C2FaC5": {
+        "symbol": "CPOOL",
+        "decimals": 18
+    },
+    "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0": {
+        "symbol": "MATIC",
+        "decimals": 18
+    },
+    "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6": {
+        "symbol": "STG",
+        "decimals": 18
+    },
+    "0xc944E90C64B2c07662A292be6244BDf05Cda44a7": {
+        "symbol": "GRT",
+        "decimals": 18
+    },
+    "0x92D6C1e31e14520e676a687F0a93788B716BEff5": {
+        "symbol": "DYDX",
+        "decimals": 18
+    },
+    "0xfF20817765cB7f73d4bde2e66e067E58D11095C2": {
+        "symbol": "AMP",
+        "decimals": 18
+    },
+    "0xc00e94Cb662C3520282E6f5717214004A7f26888": {
+        "symbol": "COMP",
+        "decimals": 18
+    },
+    "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C": {
+        "symbol": "BNT",
+        "decimals": 18
+    },
+    "0x102c776DDB30C754dEd4fDcC77A19230A60D4e4f": {
+        "symbol": "FLC",
+        "decimals": 18
+    },
+    "0x79c58f70905F734641735BC61e45c19dD9Ad60bC": {
+        "symbol": "USDC-DAI-USDT",
+        "decimals": 18
+    },
+    "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29": {
+        "symbol": "SYN",
+        "decimals": 18
+    },
+    "0x808507121B80c02388fAd14726482e061B8da827": {
+        "symbol": "PENDLE",
+        "decimals": 18
+    },
+    "0x9E9FbDE7C7a83c43913BddC8779158F1368F0413": {
+        "symbol": "PANDORA",
+        "decimals": 18
+    },
+    "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE": {
+        "symbol": "BEAM",
+        "decimals": 18
+    },
+    "0xD46bA6D942050d489DBd938a2C909A5d5039A161": {
+        "symbol": "AMPL",
+        "decimals": 9
+    },
+    "0x3c3a81e81dc49A522A592e7622A7E711c06bf354": {
+        "symbol": "MNT",
+        "decimals": 18
+    },
+    "0xBAac2B4491727D78D2b78815144570b9f2Fe8899": {
+        "symbol": "DOG",
+        "decimals": 18
+    },
+    "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B": {
+        "symbol": "CVX",
+        "decimals": 18
+    },
+    "0x35e78b3982E87ecfD5b3f3265B601c046cDBe232": {
+        "symbol": "XAI",
+        "decimals": 18
+    },
+    "0xb23d80f5FefcDDaa212212F028021B41DEd428CF": {
+        "symbol": "PRIME",
+        "decimals": 18
+    },
+    "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F": {
+        "symbol": "SNX",
+        "decimals": 18
+    },
+    "0x8AB2ff0116A279a99950C66A12298962D152B83c": {
+        "symbol": "ORDS",
+        "decimals": 18
+    },
+    "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110": {
+        "symbol": "ezETH",
+        "decimals": 18
+    },
+    "0x9F52c8ecbEe10e00D9faaAc5Ee9Ba0fF6550F511": {
+        "symbol": "SIPHER",
+        "decimals": 18
+    },
+    "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
+        "symbol": "LINK",
+        "decimals": 18
+    },
+    "0xe76C6c83af64e4C60245D8C7dE953DF673a7A33D": {
+        "symbol": "RAIL",
+        "decimals": 18
+    },
+    "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72": {
+        "symbol": "ENS",
+        "decimals": 18
+    },
+    "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5": {
+        "symbol": "OHM",
+        "decimals": 9
+    },
+    "0x0001A500A6B18995B03f44bb040A5fFc28E45CB0": {
+        "symbol": "OLAS",
+        "decimals": 18
+    },
+    "0x2ef8a2Ccb058915E00E16aA13Cc6E36F19D8893b": {
+        "symbol": "VDO",
+        "decimals": 18
+    },
+    "0x97de57eC338AB5d51557DA3434828C5DbFaDA371": {
+        "symbol": "eUSD",
+        "decimals": 18
+    },
+    "0x7dE91B204C1C737bcEe6F000AAA6569Cf7061cb7": {
+        "symbol": "XRT",
+        "decimals": 9
+    },
+    "0xCa14007Eff0dB1f8135f4C25B34De49AB0d42766": {
+        "symbol": "STRK",
+        "decimals": 18
+    },
+    "0xD31a59c85aE9D8edEFeC411D448f90841571b89c": {
+        "symbol": "SOL",
+        "decimals": 9
+    },
+    "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF": {
+        "symbol": "IMX",
+        "decimals": 18
+    },
+    "0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671": {
+        "symbol": "NMR",
+        "decimals": 18
+    },
+    "0x865377367054516e17014CcdED1e7d814EDC9ce4": {
+        "symbol": "DOLA",
+        "decimals": 18
+    },
+    "0x69bBC3F8787d573F1BBDd0a5f40C7bA0Aee9BCC9": {
+        "symbol": "YUP",
+        "decimals": 18
+    },
+    "0x2dfF88A56767223A5529eA5960Da7A3F5f766406": {
+        "symbol": "ID",
+        "decimals": 18
+    },
+    "0x78a0A62Fba6Fb21A83FE8a3433d44C73a4017A6f": {
+        "symbol": "OX",
+        "decimals": 18
+    },
+    "0x38E68A37E401F7271568CecaAc63c6B1e19130B4": {
+        "symbol": "BANANA",
+        "decimals": 18
+    },
+    "0x21BfBDa47A0B4B5b1248c767Ee49F7caA9B23697": {
+        "symbol": "OVR",
+        "decimals": 18
+    },
+    "0x8457CA5040ad67fdebbCC8EdCE889A335Bc0fbFB": {
+        "symbol": "ALT",
+        "decimals": 18
+    },
+    "0x12eF10A4fc6e1Ea44B4ca9508760fF51c647BB71": {
+        "symbol": "RSTK",
+        "decimals": 18
+    },
+    "0x6123B0049F904d730dB3C36a31167D9d4121fA6B": {
+        "symbol": "RBN",
+        "decimals": 18
+    },
+    "0x38D64ce1Bdf1A9f24E0Ec469C9cAde61236fB4a0": {
+        "symbol": "vETH",
+        "decimals": 18
+    },
+    "0x38e382F74dfb84608F3C1F10187f6bEf5951DE93": {
+        "symbol": "MUBI",
+        "decimals": 18
+    },
+    "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9": {
+        "symbol": "BITCOIN",
+        "decimals": 8
+    },
+    "0xc55126051B22eBb829D00368f4B12Bde432de5Da": {
+        "symbol": "BTRFLY",
+        "decimals": 18
+    },
+    "0x89d584A1EDB3A70B3B07963F9A3eA5399E38b136": {
+        "symbol": "AIT",
+        "decimals": 18
+    },
+    "0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85": {
+        "symbol": "FET",
+        "decimals": 18
+    },
+    "0xfF836A5821E69066c87E268bC51b849FaB94240C": {
+        "symbol": "\u0448\u0430\u0439\u043b\u0443\u0448\u0430\u0439",
+        "decimals": 18
+    },
+    "0x8CCD897ca6160ED76755383B201C1948394328c7": {
+        "symbol": "wBAI",
+        "decimals": 9
+    },
+    "0x1BB9b64927e0C5e207C9DB4093b3738Eef5D8447": {
+        "symbol": "VEC",
+        "decimals": 9
+    },
+    "0x27702a26126e0B3702af63Ee09aC4d1A084EF628": {
+        "symbol": "ALEPH",
+        "decimals": 18
+    },
+    "0x382EDfe4c6168858C81893fE00fCB7b68914d929": {
+        "symbol": "EMERALD",
+        "decimals": 8
+    },
+    "0x467719aD09025FcC6cF6F8311755809d45a5E5f3": {
+        "symbol": "AXL",
+        "decimals": 6
+    },
+    "0x15f74458aE0bFdAA1a96CA1aa779D715Cc1Eefe4": {
+        "symbol": "GRAI",
+        "decimals": 18
+    },
+    "0x3Ba925fdeAe6B46d0BB4d424D829982Cb2F7309e": {
+        "symbol": "RBX",
+        "decimals": 18
+    },
+    "0x15b7c0c907e4C6b9AdaAaabC300C08991D6CEA05": {
+        "symbol": "GEL",
+        "decimals": 18
+    },
+    "0xF30f0f076c42f6a94E74628f65fa2018A1002B34": {
+        "symbol": "CHAD",
+        "decimals": 18
+    },
+    "0x15D4c048F83bd7e37d49eA4C83a07267Ec4203dA": {
+        "symbol": "GALA",
+        "decimals": 8
+    },
+    "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE": {
+        "symbol": "SHIB",
+        "decimals": 18
+    },
+    "0x826180541412D574cf1336d22c0C0a287822678A": {
+        "symbol": "FLIP",
+        "decimals": 18
+    },
+    "0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38": {
+        "symbol": "osETH",
+        "decimals": 18
+    },
+    "0xba100000625a3754423978a60c9317c58a424e3D": {
+        "symbol": "BAL",
+        "decimals": 18
+    },
+    "0x614Da3b37B6F66F7Ce69B4Bbbcf9a55CE6168707": {
+        "symbol": "MMX",
+        "decimals": 18
+    },
+    "0xdf3ac4F479375802A821f7b7b46Cd7EB5E4262cC": {
+        "symbol": "eUSD",
+        "decimals": 18
+    },
+    "0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593": {
+        "symbol": "rETH",
+        "decimals": 18
+    },
+    "0x0E573Ce2736Dd9637A0b21058352e1667925C7a8": {
+        "symbol": "USDV",
+        "decimals": 6
+    },
+    "0xd7C9F0e536dC865Ae858b0C0453Fe76D13c3bEAc": {
+        "symbol": "XAI",
+        "decimals": 18
+    },
+    "0x4b1D0b9F081468D780Ca1d5d79132b64301085d1": {
+        "symbol": "LMR",
+        "decimals": 8
+    },
+    "0x038ed1383763D704d4271FE856ac96b4557E9D06": {
+        "symbol": "ALPHABET",
+        "decimals": 18
+    },
+    "0x596192bB6e41802428Ac943D2f1476C1Af25CC0E": {
+        "symbol": "ezETH-WETH-BPT",
+        "decimals": 18
+    },
+    "0x15e6E0D4ebeAC120F9a97e71FaA6a0235b85ED12": {
+        "symbol": "SAVM",
+        "decimals": 18
+    },
+    "0x576e2BeD8F7b46D34016198911Cdf9886f78bea7": {
+        "symbol": "TRUMP",
+        "decimals": 9
+    },
+    "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa": {
+        "symbol": "mETH",
+        "decimals": 18
+    },
+    "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409": {
+        "symbol": "FDUSD",
+        "decimals": 18
+    },
+    "0x9BE89D2a4cd102D8Fecc6BF9dA793be995C22541": {
+        "symbol": "BBTC",
+        "decimals": 8
+    },
+    "0xdB25f211AB05b1c97D595516F45794528a807ad8": {
+        "symbol": "EURS",
+        "decimals": 2
+    },
+    "0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8": {
+        "symbol": "agEUR",
+        "decimals": 18
+    },
+    "0x111111111117dC0aa78b770fA6A738034120C302": {
+        "symbol": "1INCH",
+        "decimals": 18
+    },
+    "0x384a02A6aAE543FB6387e36f840f9F66cDc433Fc": {
+        "symbol": "BabyTRUMP",
+        "decimals": 18
+    },
+    "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8": {
+        "symbol": "PYUSD",
+        "decimals": 6
+    },
+    "0xFEEf77d3f69374f66429C91d732A244f074bdf74": {
+        "symbol": "cvxFXS",
+        "decimals": 18
+    },
+    "0xed1167b6Dc64E8a366DB86F2E952A482D0981ebd": {
+        "symbol": "LBR",
+        "decimals": 18
+    },
+    "0x24fcFC492C1393274B6bcd568ac9e225BEc93584": {
+        "symbol": "MAVIA",
+        "decimals": 18
+    },
+    "0xd0D56273290D339aaF1417D9bfa1bb8cFe8A0933": {
+        "symbol": "FOOM",
+        "decimals": 18
+    },
+    "0x40a7dF3dF8b56147B781353D379cB960120211D7": {
+        "symbol": "MOBY",
+        "decimals": 18
+    },
+    "0xe9572938bcbf08adceE86Fd12A7C0D08dC4Ab841": {
+        "symbol": "INS",
+        "decimals": 18
+    },
+    "0xb131f4A55907B10d1F0A50d8ab8FA09EC342cd74": {
+        "symbol": "MEME",
+        "decimals": 18
+    },
+    "0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1": {
+        "symbol": "ARB",
+        "decimals": 18
+    },
+    "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429": {
+        "symbol": "GLM",
+        "decimals": 18
+    },
+    "0xa8c8CfB141A3bB59FEA1E2ea6B79b5ECBCD7b6ca": {
+        "symbol": "NOIA",
+        "decimals": 18
+    },
+    "0x25B4f5D4C314bCD5d7962734936C957B947cb7CF": {
+        "symbol": "TGC",
+        "decimals": 18
+    },
+    "0x45C2F8c9B4c0bDC76200448cc26C48ab6ffef83F": {
+        "symbol": "DOMI",
+        "decimals": 18
+    },
+    "0xE453C3409f8Ad2B1FE1ED08E189634d359705A5B": {
+        "symbol": "DGI",
+        "decimals": 18
+    },
+    "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f": {
+        "symbol": "GHO",
+        "decimals": 18
+    },
+    "0x02f92800F57BCD74066F5709F1Daa1A4302Df875": {
+        "symbol": "PEAS",
+        "decimals": 18
+    },
+    "0x243cACb4D5fF6814AD668C3e225246efA886AD5a": {
+        "symbol": "SHI",
+        "decimals": 18
+    },
+    "0xB7037457de15fed6cbEcc0C62d5D610834b958Ec": {
+        "symbol": "WHIRL",
+        "decimals": 18
+    },
+    "0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b": {
+        "symbol": "CRO",
+        "decimals": 8
+    },
+    "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9": {
+        "symbol": "AAVE",
+        "decimals": 18
+    },
+    "0x8DE5B80a0C1B02Fe4976851D030B36122dbb8624": {
+        "symbol": "VANRY",
+        "decimals": 18
+    }
 }
