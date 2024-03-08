@@ -870,7 +870,7 @@ ONEINCH_RFQ = [{
     "name": "OrderFilledRFQ",
     "type": "event"}]
 
-ONEINCH_LIMIT = [{
+ONEINCH_V5_LIMIT = [{
     "anonymous": False,
     "inputs": [
         {
@@ -890,6 +890,20 @@ ONEINCH_LIMIT = [{
             "type": "uint256"}],
     "name": "OrderFilled",
     "type": "event"}]
+
+ONEINCH_V6_LIMIT = [{
+                        "anonymous": False,
+                        "inputs": [{
+                                       "indexed": False,
+                                       "internalType": "bytes32",
+                                       "name": "orderHash",
+                                       "type": "bytes32"}, {
+                                       "indexed": False,
+                                       "internalType": "uint256",
+                                       "name": "remainingAmount",
+                                       "type": "uint256"}],
+                        "name": "OrderFilled",
+                        "type": "event"}]
 
 INTEGRAL = [{
     "anonymous": False,

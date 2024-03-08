@@ -10,10 +10,10 @@ from data.logger import CustomFormatter
 from web3_provider import w3
 
 from abis import AAVE_LENDING_V2
-from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL
+from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL, AGG_ROUTER_V5, AGG_ROUTER_V6
 from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, PANCAKE_V3, \
     SYNAPSE, BANCOR, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, \
-    ONEINCH_LIMIT, INTEGRAL, SNX, BEBOP_RFQ, NATIVE_V1, DEFI_PLAZA, MSTABLE, SMOOTHY_V1, FIXED_RATE
+    ONEINCH_V5_LIMIT, ONEINCH_V6_LIMIT, INTEGRAL, SNX, BEBOP_RFQ, NATIVE_V1, DEFI_PLAZA, MSTABLE, SMOOTHY_V1, FIXED_RATE
 from token_abis import STETH, RETH, SFRXETH, AAVE_TOKEN, ERC20
 from utils import generate_swap_dag
 
@@ -49,7 +49,8 @@ OTC_ORDER = w3.eth.contract(address=None, abi=OTC_ORDER)
 HASHFLOW = w3.eth.contract(address=None, abi=HASHFLOW)
 RFQ_ORDER = w3.eth.contract(address=None, abi=RFQ_ORDER)
 ONEINCH_RFQ = w3.eth.contract(address=None, abi=ONEINCH_RFQ)
-ONEINCH_LIMIT = w3.eth.contract(address=None, abi=ONEINCH_LIMIT)
+ONEINCH_V5_LIMIT = w3.eth.contract(address=None, abi=ONEINCH_V5_LIMIT)
+ONEINCH_V6_LIMIT = w3.eth.contract(address=None, abi=ONEINCH_V6_LIMIT)
 BEBOP_RFQ = w3.eth.contract(address=None, abi=BEBOP_RFQ)
 NATIVE_V1 = w3.eth.contract(address=None, abi=NATIVE_V1)
 INTEGRAL = w3.eth.contract(address=None, abi=INTEGRAL)
@@ -95,24 +96,59 @@ def get_oneinch_rfq(r_):
 
 
 def get_oneinch_limit(r_):
+    # MIGHT BE BROKEN FOR 1INCH FUSION
     token = w3.eth.contract(address=None, abi=ERC20)
-    limit_events = ONEINCH_LIMIT.events.OrderFilled().process_receipt(r_)
+    v5_limit_events = ONEINCH_V5_LIMIT.events.OrderFilled().process_receipt(r_)
+    v6_limit_events = ONEINCH_V6_LIMIT.events.OrderFilled().process_receipt(r_)
     transfers = token.events.Transfer().process_receipt(r_)
+    first_log_index = r_['logs'][0]['logIndex']
     limit = []
-    for event in limit_events:
+    for event in v5_limit_events:
         index = event['logIndex']
-        maker = event['args']['maker']
-        # Next two token transfers should have
+        # Try skipping fusion swaps, can start with an approval
+        if index == first_log_index or index == first_log_index + 1:
+            continue
+        # In v5 next two tokens transfers should be the swap
         next_two = [e for e in transfers if e['logIndex'] > index]
+        assert len(next_two) >= 2
         in_, out_ = next_two[0], next_two[1]
         if not (in_['args']['from'] == out_['args']['to'] or in_['args']['to'] == out_['args']['from']):
+            logger.warning('Unmatched 1inch v5 limit order')
             continue
-        assert len(next_two) >= 2
-        maker, maker_token, maker_amount = in_['args']['from'], in_['address'], in_['args']['value']
-        taker, taker_token, taker_amount = out_['args']['from'], out_['address'], out_['args']['value']
+        maker_token, maker_amount = in_['address'], in_['args']['value']
+        taker_token, taker_amount = out_['address'], out_['args']['value']
+
         limit_action = {
-            'pool_address': maker,
-            'protocol': 'oneinch_limit',
+            'pool_address': AGG_ROUTER_V5,
+            'protocol': 'oneinch_v5_limit',
+            'token_out': maker_token,
+            'amount_out': maker_amount,
+            'token_in': taker_token,
+            'amount_in': taker_amount,
+            'from': out_['args']['from'],
+            'to': in_['args']['to'],
+            'log_index': index
+        }
+        limit.append(limit_action)
+
+    for event in v6_limit_events:
+        index = event['logIndex']
+        # Try skipping fusion swaps, can start with an approval
+        if index == first_log_index or index == first_log_index + 1:
+            continue
+        # In v6 previous two tokens transfers should be the swap
+        prev_two = [e for e in transfers if e['logIndex'] < index]
+        assert len(prev_two) >= 2
+        in_, out_ = prev_two[-2], prev_two[-1]
+        if not (in_['args']['from'] == out_['args']['to'] or in_['args']['to'] == out_['args']['from']):
+            logger.warning('Unmatched 1inch v6 limit order')
+            continue
+        maker_token, maker_amount = in_['address'], in_['args']['value']
+        taker_token, taker_amount = out_['address'], out_['args']['value']
+
+        limit_action = {
+            'pool_address': AGG_ROUTER_V6,
+            'protocol': 'oneinch_v6_limit',
             'token_out': maker_token,
             'amount_out': maker_amount,
             'token_in': taker_token,
@@ -658,7 +694,7 @@ def main():
 
     # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
-    receipt = w3.eth.get_transaction_receipt(' 0x8d0b62dcff1a2a21bc1bbfa71c7665d693718e793b53c00305d63678314732a8')
+    receipt = w3.eth.get_transaction_receipt('0xb9aa4a0e4739857b0be9844863a2d7375d6889fd247acf616b6431dda1b9704b')
     transfers = extract_erc20_transfers(receipt)
     swaps = extract_swaps(receipt)
     dag = generate_swap_dag(swaps, transfers, symbols=True)
@@ -669,7 +705,7 @@ def main():
     ipdb.set_trace()
 
     for i, r in data.iterrows():
-        if i < 2800:
+        if i < 10000:
             continue
         tx_hash = r['tx_hash']
         logger.info(f"Processing transaction {i}: {tx_hash}, volume {int(r['amount_usd'])} USD")

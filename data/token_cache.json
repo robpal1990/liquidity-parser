@@ -670,5 +670,149 @@
     "0x8DE5B80a0C1B02Fe4976851D030B36122dbb8624": {
         "symbol": "VANRY",
         "decimals": 18
+    },
+    "0x8248270620Aa532E4d64316017bE5E873E37cc09": {
+        "symbol": "DEVVE",
+        "decimals": 18
+    },
+    "0xd2bDaAF2b9cc6981fd273DcB7C04023bFbe0a7fe": {
+        "symbol": "AVI",
+        "decimals": 18
+    },
+    "0xd3E4Ba569045546D09CF021ECC5dFe42b1d7f6E4": {
+        "symbol": "MNW",
+        "decimals": 18
+    },
+    "0x35fA164735182de50811E8e2E824cFb9B6118ac2": {
+        "symbol": "eETH",
+        "decimals": 18
+    },
+    "0x4C6eC08CF3fc987c6C4BEB03184D335A2dFc4042": {
+        "symbol": "PAINT",
+        "decimals": 18
+    },
+    "0x0800394f6E23dD539929c8B77a3d45c96F76AEFC": {
+        "symbol": "TURT",
+        "decimals": 18
+    },
+    "0x6f259637dcD74C767781E37Bc6133cd6A68aa161": {
+        "symbol": "HT",
+        "decimals": 18
+    },
+    "0x4594CFfbFc09BC5e7eCF1C2e1C1e24F0f7D29036": {
+        "symbol": "0KN",
+        "decimals": 18
+    },
+    "0x2862259F492B51CD01a702b24D6d3ad6146c2972": {
+        "symbol": "NODE0X",
+        "decimals": 18
+    },
+    "0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55": {
+        "symbol": "SUPER",
+        "decimals": 18
+    },
+    "0x26c8AFBBFE1EBaca03C2bB082E69D0476Bffe099": {
+        "symbol": "CELL",
+        "decimals": 18
+    },
+    "0xDDcc69879e1d2376ce799051afa98C689F234ccA": {
+        "symbol": "SMRT",
+        "decimals": 18
+    },
+    "0x14feE680690900BA0ccCfC76AD70Fd1b95D10e16": {
+        "symbol": "$PAAL",
+        "decimals": 9
+    },
+    "0xF90c7f66eAc7E2130bF677D69a250b2136Cf6697": {
+        "symbol": "HAKI",
+        "decimals": 18
+    },
+    "0x0d438F3b5175Bebc262bF23753C1E53d03432bDE": {
+        "symbol": "wNXM",
+        "decimals": 18
+    },
+    "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E": {
+        "symbol": "FLOKI",
+        "decimals": 9
+    },
+    "0x761D38e5ddf6ccf6Cf7c55759d5210750B5D60F3": {
+        "symbol": "ELON",
+        "decimals": 18
+    },
+    "0x5026F006B85729a8b14553FAE6af249aD16c9aaB": {
+        "symbol": "WOJAK",
+        "decimals": 18
+    },
+    "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30": {
+        "symbol": "INJ",
+        "decimals": 18
+    },
+    "0xA735A3AF76CC30791C61c10d585833829d36CBe0": {
+        "symbol": "imgnAI",
+        "decimals": 9
+    },
+    "0x19EfA7D0FC88FfE461D1091F8cBe56DC2708a84f": {
+        "symbol": "UNITAO",
+        "decimals": 18
+    },
+    "0xF9Ca9523E5b5A42C3018C62B084Db8543478C400": {
+        "symbol": "LAKE",
+        "decimals": 18
+    },
+    "0xD33526068D116cE69F19A9ee46F0bd304F21A51f": {
+        "symbol": "RPL",
+        "decimals": 18
+    },
+    "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a": {
+        "symbol": "Mog",
+        "decimals": 18
+    },
+    "0x069d89974f4edaBde69450f9cF5CF7D8Cbd2568D": {
+        "symbol": "BVM",
+        "decimals": 18
+    },
+    "0x4Fabb145d64652a948d72533023f6E7A623C7C53": {
+        "symbol": "BUSD",
+        "decimals": 18
+    },
+    "0x27C70Cd1946795B66be9d954418546998b546634": {
+        "symbol": "LEASH",
+        "decimals": 18
+    },
+    "0x5283D291DBCF85356A21bA090E6db59121208b44": {
+        "symbol": "BLUR",
+        "decimals": 18
+    },
+    "0x5cc5E64AB764A0f1E97F23984E20fD4528356a6a": {
+        "symbol": "XRGB",
+        "decimals": 18
+    },
+    "0x0d02755a5700414B26FF040e1dE35D337DF56218": {
+        "symbol": "BEND",
+        "decimals": 18
+    },
+    "0xb9f599ce614Feb2e1BBe58F180F370D05b39344E": {
+        "symbol": "PORK",
+        "decimals": 18
+    },
+    "0x0000000000ca73A6df4C58b84C5B4b847FE8Ff39": {
+        "symbol": "ASTX",
+        "decimals": 18
+    },
+    "0x41f7B8b9b897276b7AAE926a9016935280b44E97": {
+        "symbol": "USDC",
+        "decimals": 6
+    },
+    "0x7825e833D495F3d1c28872415a4aee339D26AC88": {
+        "symbol": "TLOS",
+        "decimals": 18
+    },
+    "0xBa25B2281214300E4e649feAd9A6d6acD25f1c0a": {
+        "symbol": "TREE",
+        "decimals": 18
+    },
+    "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4": {
+        "symbol": "MAP",
+        "decimals": 18
     }
 }
