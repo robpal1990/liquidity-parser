@@ -682,19 +682,21 @@ def extract_swaps(r):
 
 
 def main():
-    logger.info('Loading data')
-    data = pd.read_csv('/home/robert/Projects/liquidity-parser/1inch2.csv')
-    data = data[~((data['src_token_symbol'].isin(['WETH', 'ETH'])) & (data['src_token_symbol'].isin(['WETH', 'ETH'])))]
-    data = data[
-        data['tx_to'].isin(['0x1111111254eeb25477b68fb85ed929f73a960582', '0xad3b67bca8935cb510c8d18bd45f0b94f54a968f',
-                           '0x111111125421ca6dc452d289314280a0f8842a65'])]
+    # logger.info('Loading data')
+    # data = pd.read_csv('/home/robert/Projects/liquidity-parser/1inch2.csv')
+    # data = data[~((data['src_token_symbol'].isin(['WETH', 'ETH'])) & (data['src_token_symbol'].isin(['WETH', 'ETH'])))]
+    # data = data[
+    #     data['tx_to'].isin(['0x1111111254eeb25477b68fb85ed929f73a960582', '0xad3b67bca8935cb510c8d18bd45f0b94f54a968f',
+    #                        '0x111111125421ca6dc452d289314280a0f8842a65'])]
     # logger.info('Data loaded')
     cache = load_pool_cache()
-    pools_cached = set([k for v in cache.values() for k in v.keys()])
 
     # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
-    receipt = w3.eth.get_transaction_receipt('0xb9aa4a0e4739857b0be9844863a2d7375d6889fd247acf616b6431dda1b9704b')
+    # receipt = w3.eth.get_transaction_receipt('0xb9aa4a0e4739857b0be9844863a2d7375d6889fd247acf616b6431dda1b9704b')
+    receipt = w3.eth.get_transaction_receipt('0x8ff9cb9838d46c1df4c897274a5066df67c766a5370bfc4cee6a8c9ecc7f541f')
+    receipt = w3.eth.get_transaction_receipt('0x746abc3b9a30dd4ef17bc6033d53a88243b6438857c73a353102eeefbef1e7c6')
+    # receipt = w3.eth.get_transaction_receipt('0x69eb97caa4293d771f1e6cfb2c1dd98bd513369f9d772fef78178741b448a374')
     transfers = extract_erc20_transfers(receipt)
     swaps = extract_swaps(receipt)
     dag = generate_swap_dag(swaps, transfers, symbols=True)

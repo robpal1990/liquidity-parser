@@ -814,5 +814,29 @@
     "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4": {
         "symbol": "MAP",
         "decimals": 18
+    },
+    "0xe485E2f1bab389C08721B291f6b59780feC83Fd7": {
+        "symbol": "SHU",
+        "decimals": 18
+    },
+    "0xe3944AB788A60ca266f1eEc3C26925b95f6370aD": {
+        "symbol": "RAIN",
+        "decimals": 18
+    },
+    "0x44108f0223A3C3028F5Fe7AEC7f9bb2E66beF82F": {
+        "symbol": "ACX",
+        "decimals": 18
+    },
+    "0x30D20208d987713f46DFD34EF128Bb16C404D10f": {
+        "symbol": "SD",
+        "decimals": 18
+    },
+    "0x508E00D5ceF397B02d260D035e5EE80775e4C821": {
+        "symbol": "1CAT",
+        "decimals": 18
+    },
+    "0x9aE380F0272E2162340a5bB646c354271c0F5cFC": {
+        "symbol": "CNC",
+        "decimals": 18
     }
 }
