@@ -133,3 +133,14 @@ UNI_V3 = [{
         "type": "address"}],
     "stateMutability": "view",
     "type": "function"}]
+
+UNI_V1 = [{
+              "name": "tokenAddress",
+              "outputs": [{
+                              "type": "address",
+                              "name": "out"}],
+              "inputs": [],
+              "constant": True,
+              "payable": False,
+              "type": "function",
+              "gas": 1413}]

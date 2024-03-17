@@ -3,10 +3,11 @@ import logging
 
 import ipdb
 
-from abis import UNI_V2, UNI_V3
+from abis import UNI_V1, UNI_V2, UNI_V3
 from data.logger import CustomFormatter
 from token_abis import ERC20
 from web3_provider import w3
+from addresses import ETH, WETH
 
 
 def load_token_cache():
@@ -57,6 +58,12 @@ def get_uni_v2_pool_data(address):
     return t0, t1
 
 
+def get_uni_v1_pool_data(address):
+    pool = w3.eth.contract(address=address, abi=UNI_V1)
+    token = pool.functions.tokenAddress().call()
+    return token
+
+
 def get_curve_v1_pool_data(address):
     pass
 
@@ -65,6 +72,7 @@ def generate_swap_dag(events, transfers, symbols):
     swaps = []
     curve_v1_swaps = events.get('CURVE_V1', [])
     curve_v2_swaps = events.get('CURVE_V2', [])
+    uni_v1_swaps = events.get('UNI_V1', [])
     uni_v2_swaps = events.get('UNI_V2', [])
     uni_v3_swaps = events.get('UNI_V3', [])
     pancake_v3_swaps = events.get('PANCAKE_V3', [])
@@ -80,6 +88,7 @@ def generate_swap_dag(events, transfers, symbols):
     synapse_swaps = events.get('SYNAPSE', [])
     mav_v1_swaps = events.get('MAV_V1', [])
     bancor_swaps = events.get('BANCOR', [])
+    bancor_v3_swaps = events.get('BANCOR_V3', [])
     defi_plaza_swaps = events.get('DEFI_PLAZA', [])
     mstable_swaps = events.get('MSTABLE', [])
     kyber_swaps = events.get('KYBER', [])
@@ -187,6 +196,52 @@ def generate_swap_dag(events, transfers, symbols):
             'to': s['args']['buyer'],
             'log_index': s['logIndex']
         }
+        swaps.append(swap)
+
+    for s in uni_v1_swaps:
+        swap = {
+            'pool_address': s['address'],
+            'protocol': 'uni_v1',
+            'from': s['args']['buyer'],
+            'to': s['args']['buyer'],
+            'log_index': s['logIndex']
+        }
+
+        if s['address'] not in POOLS['UNI_V1']:
+            logger.warning(f"Missing UNI_V1 pool {s['address']}")
+            t0 = get_uni_v1_pool_data(s['address'])
+            t1 = ETH
+            if t0 < WETH:
+                POOLS['UNI_V1'][s['address']] = {
+                    "0": t0,
+                    "1": ETH}
+            else:
+                POOLS['UNI_V1'][s['address']] = {
+                    "0": ETH,
+                    "1": t0}
+            save_pool_cache(POOLS)
+        else:
+            t0 = POOLS['UNI_V1'][s['address']]["0"]
+            t1 = POOLS['UNI_V1'][s['address']]["1"]
+
+        if t0 == ETH:
+            token = t1
+        else:
+            token = t0
+
+        if s['event'] == 'EthPurchase':
+            swap['amount_in'] = s['args']['tokens_sold']
+            swap['amount_out'] = s['args']['eth_bought']
+            swap['token_in'] = token
+            swap['token_out'] = ETH
+        elif s['event'] == 'TokenPurchase':
+            swap['amount_in'] = s['args']['eth_sold']
+            swap['amount_out'] = s['args']['tokens_bought']
+            swap['token_in'] = ETH
+            swap['token_out'] = token
+        else:
+            logger.warning('SUSPICIOUS UNI_V1 SWAP')
+            continue
         swaps.append(swap)
 
     for s in uni_v2_swaps:
@@ -432,6 +487,20 @@ def generate_swap_dag(events, transfers, symbols):
         }
         swaps.append(swap)
 
+    for s in bancor_v3_swaps:
+        swap = {
+            'pool_address': s['address'],
+            'protocol': 'bancor_v3',
+            'token_in': s['args']['sourceToken'],
+            'amount_in': s['args']['sourceAmount'],
+            'token_out': s['args']['targetToken'],
+            'amount_out': s['args']['targetAmount'],
+            'from': s['args']['trader'],
+            'to': s['args']['trader'],
+            'log_index': s['logIndex']
+        }
+        swaps.append(swap)
+
     for s in defi_plaza_swaps:
         swap = {
             'pool_address': s['address'],
@@ -528,7 +597,8 @@ def generate_swap_dag(events, transfers, symbols):
         else:
             logger.warning('SUSPICIOUS FIXED_RATE SWAP')
             continue
-        import ipdb; ipdb.set_trace()
+        import ipdb;
+        ipdb.set_trace()
         swaps.append(swap)
 
     # Filthy

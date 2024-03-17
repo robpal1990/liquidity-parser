@@ -402,7 +402,7 @@ PANCAKE_V3 = [{
     "name": "Swap",
     "type": "event"}]
 
-UNI = [{
+UNI_V1 = [{
     "name": "TokenPurchase",
     "inputs": [
         {

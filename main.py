@@ -11,7 +11,7 @@ from web3_provider import w3
 
 from abis import AAVE_LENDING_V2
 from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL, AGG_ROUTER_V5, AGG_ROUTER_V6
-from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, PANCAKE_V3, \
+from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI_V1, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, PANCAKE_V3, \
     SYNAPSE, BANCOR, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, \
     ONEINCH_V5_LIMIT, ONEINCH_V6_LIMIT, INTEGRAL, SNX, BEBOP_RFQ, NATIVE_V1, DEFI_PLAZA, MSTABLE, SMOOTHY_V1, FIXED_RATE
 from token_abis import STETH, RETH, SFRXETH, AAVE_TOKEN, ERC20
@@ -30,7 +30,7 @@ BALANCER_V1 = w3.eth.contract(address=None, abi=BALANCER_V1)
 BALANCER_V2 = w3.eth.contract(address=None, abi=BALANCER_V2)  # Also SWAAP_V2
 DODO = w3.eth.contract(address=None, abi=DODO)
 DODO_V2 = w3.eth.contract(address=None, abi=DODO_V2)
-UNI = w3.eth.contract(address=None, abi=UNI)
+UNI_V1 = w3.eth.contract(address=None, abi=UNI_V1)
 UNI_V2 = w3.eth.contract(address=None, abi=UNI_V2)  # Also: SUSHI, SHIBA, CRO, NOMISWAP, PANCAKE, FRAXSWAP, SAKESWAP
 UNI_V3 = w3.eth.contract(address=None, abi=UNI_V3)  # Also: KYBER_ELASTIC, SOLIDLY_V3
 PANCAKE_V3 = w3.eth.contract(address=None, abi=PANCAKE_V3)
@@ -138,7 +138,9 @@ def get_oneinch_limit(r_):
             continue
         # In v6 previous two tokens transfers should be the swap
         prev_two = [e for e in transfers if e['logIndex'] < index]
-        assert len(prev_two) >= 2
+        if not len(prev_two) >= 2:
+            logger.warning('Unmatched 1inch v6 limit order')
+            continue
         in_, out_ = prev_two[-2], prev_two[-1]
         if not (in_['args']['from'] == out_['args']['to'] or in_['args']['to'] == out_['args']['from']):
             logger.warning('Unmatched 1inch v6 limit order')
@@ -220,7 +222,7 @@ def get_native_rfq(r_):
     for event in rfq_events:
         next_two = [e for e in transfers if e['logIndex'] > event['logIndex']][:2]
         amount_in = event['args']['amountIn']
-        assert next_two[1]['args']['value'] == amount_in
+        assert (next_two[1]['args']['value'] == amount_in or next_two[1]['args']['from'] == event['args']['recipient'])
         rfq_action = {
             'pool_address': next_two[0]['args']['from'],
             'protocol': 'native_v1',
@@ -642,7 +644,7 @@ def extract_swaps(r):
         'BALANCER_V2': BALANCER_V2.events.Swap().process_receipt(r),
         'DODO': DODO.events.SellBaseToken().process_receipt(r) + DODO.events.BuyBaseToken().process_receipt(r),
         'DODO_V2': DODO_V2.events.DODOSwap().process_receipt(r),
-        'UNI': UNI.events.TokenPurchase().process_receipt(r),
+        'UNI_V1': UNI_V1.events.TokenPurchase().process_receipt(r) + UNI_V1.events.EthPurchase().process_receipt(r),
         'UNI_V2': UNI_V2.events.Swap().process_receipt(r),
         'UNI_V3': UNI_V3.events.Swap().process_receipt(r),
         'PANCAKE_V3': PANCAKE_V3.events.Swap().process_receipt(r),
@@ -683,41 +685,52 @@ def extract_swaps(r):
 
 def main():
     # logger.info('Loading data')
-    # data = pd.read_csv('/home/robert/Projects/liquidity-parser/1inch2.csv')
-    # data = data[~((data['src_token_symbol'].isin(['WETH', 'ETH'])) & (data['src_token_symbol'].isin(['WETH', 'ETH'])))]
-    # data = data[
-    #     data['tx_to'].isin(['0x1111111254eeb25477b68fb85ed929f73a960582', '0xad3b67bca8935cb510c8d18bd45f0b94f54a968f',
-    #                        '0x111111125421ca6dc452d289314280a0f8842a65'])]
-    # logger.info('Data loaded')
-    cache = load_pool_cache()
-
+    data = pd.read_csv('/home/robert/Projects/liquidity-parser/1inch4.csv')
+    data = data.dropna()
+    data = data.sort_values('amount_usd', ascending=False).reset_index(drop=True)
+    data = data[~((data['src_token_symbol'].isin(['WETH', 'ETH'])) & (data['src_token_symbol'].isin(['WETH', 'ETH'])))]
+    data = data[
+        data['tx_to'].isin(['0x1111111254eeb25477b68fb85ed929f73a960582',
+                            # '0xad3b67bca8935cb510c8d18bd45f0b94f54a968f',
+                           '0x111111125421ca6dc452d289314280a0f8842a65'])]
+    logger.info('Data loaded')
+    # cache = load_pool_cache()
     # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
     # receipt = w3.eth.get_transaction_receipt('0xa2ba7939818d920aef9d1b2e1222d4df962ac30610367c0ec67c3a0fb3c5dbbc') Cowswap DAO
     # receipt = w3.eth.get_transaction_receipt('0xb9aa4a0e4739857b0be9844863a2d7375d6889fd247acf616b6431dda1b9704b')
-    receipt = w3.eth.get_transaction_receipt('0x8ff9cb9838d46c1df4c897274a5066df67c766a5370bfc4cee6a8c9ecc7f541f')
-    receipt = w3.eth.get_transaction_receipt('0x746abc3b9a30dd4ef17bc6033d53a88243b6438857c73a353102eeefbef1e7c6')
+    # receipt = w3.eth.get_transaction_receipt('0x8ff9cb9838d46c1df4c897274a5066df67c766a5370bfc4cee6a8c9ecc7f541f')
+    # receipt = w3.eth.get_transaction_receipt('0x746abc3b9a30dd4ef17bc6033d53a88243b6438857c73a353102eeefbef1e7c6')
     # receipt = w3.eth.get_transaction_receipt('0x69eb97caa4293d771f1e6cfb2c1dd98bd513369f9d772fef78178741b448a374')
-    transfers = extract_erc20_transfers(receipt)
-    swaps = extract_swaps(receipt)
-    dag = generate_swap_dag(swaps, transfers, symbols=True)
-    logger.info(f"Protocols used:{list(swaps.keys())}")
-    pprint(dag)
-    pprint(dict(tally_dag(dag)))
-    import ipdb;
-    ipdb.set_trace()
+    # receipt = w3.eth.get_transaction_receipt('0x8e52e8a7edc737d384d52b4f61518a707abd661b05f4d67e8267a031b66b4a49')
+    # transfers = extract_erc20_transfers(receipt)
+    # swaps = extract_swaps(receipt)
+    # dag = generate_swap_dag(swaps, transfers, symbols=True)
+    # logger.info(f"Protocols used:{list(swaps.keys())}")
+    # pprint(dag)
+    # pprint(dict(tally_dag(dag)))
+    # import ipdb;
+    # ipdb.set_trace()
 
-    for i, r in data.iterrows():
-        if i < 10000:
+    with open('parsed.json') as f:
+        parsed = json.load(f)
+    for i, r in data.reset_index(drop=True).iterrows():
+        if r['tx_hash'] in parsed:
             continue
+        # if i < 412:
+        #     continue
         tx_hash = r['tx_hash']
-        logger.info(f"Processing transaction {i}: {tx_hash}, volume {int(r['amount_usd'])} USD")
+        logger.info(f"Processing transaction {i}: {tx_hash}")
+        # logger.info(f"Num trades {r['num_trades']}, volume {int(r['batch_value'])} USD, solver {r['solver']}")
         receipt = w3.eth.get_transaction_receipt(r['tx_hash'])
         swaps = extract_swaps(receipt)
         transfers = extract_erc20_transfers(receipt)
         dag = generate_swap_dag(swaps, transfers, symbols=True)
         logger.info(f"Protocols used:{swaps.keys()}")
+        parsed[r['tx_hash']] = dag
+        if i % 50 == 0:
+            with open('parsed.json', 'w') as f:
+                json.dump(parsed, f, indent=2)
         pprint(dict(tally_dag(dag)))
-
     import ipdb;
     ipdb.set_trace()
 
