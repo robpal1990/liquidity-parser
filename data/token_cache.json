@@ -3082,5 +3082,733 @@
     "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9": {
         "symbol": "alUSD",
         "decimals": 18
+    },
+    "0x227c7DF69D3ed1ae7574A1a7685fDEd90292EB48": {
+        "symbol": "MILADY",
+        "decimals": 18
+    },
+    "0xe6F47303032a09c8C0F8EBb713c00e6eD345E8c3": {
+        "symbol": "RISITA",
+        "decimals": 18
+    },
+    "0x7690202e2C2297bcD03664e31116d1dFfE7e3B73": {
+        "symbol": "boxETH",
+        "decimals": 18
+    },
+    "0xFe2e637202056d30016725477c5da089Ab0A043A": {
+        "symbol": "sETH2",
+        "decimals": 18
+    },
+    "0x4da27a545c0c5B758a6BA100e3a049001de870f5": {
+        "symbol": "stkAAVE",
+        "decimals": 18
+    },
+    "0xbddc20ed7978B7d59eF190962F441cD18C14e19f": {
+        "symbol": "CAGA",
+        "decimals": 18
+    },
+    "0x71Ab77b7dbB4fa7e017BC15090b2163221420282": {
+        "symbol": "HIGH",
+        "decimals": 18
+    },
+    "0x628A3b2E302C7e896AcC432D2d0dD22B6cb9bc88": {
+        "symbol": "LMWR",
+        "decimals": 18
+    },
+    "0x2A5fA016FFb20c70E2EF36058c08547F344677Aa": {
+        "symbol": "$VSG ",
+        "decimals": 18
+    },
+    "0x64351fC9810aDAd17A690E4e1717Df5e7e085160": {
+        "symbol": "msETH",
+        "decimals": 18
+    },
+    "0xab5eB14c09D416F0aC63661E57EDB7AEcDb9BEfA": {
+        "symbol": "msUSD",
+        "decimals": 18
+    },
+    "0xE72B141DF173b999AE7c1aDcbF60Cc9833Ce56a8": {
+        "symbol": "ETH+",
+        "decimals": 18
+    },
+    "0x95CcffaE3Eb8767D4a941Ec43280961dde89F4dE": {
+        "symbol": "TBANK",
+        "decimals": 18
+    },
+    "0x3593D125a4f7849a1B059E64F4517A86Dd60c95d": {
+        "symbol": "OM",
+        "decimals": 18
+    },
+    "0x7138Eb0d563f3F6722500936A11DcAe99D738A2c": {
+        "symbol": "LIF3",
+        "decimals": 18
+    },
+    "0x1F17D72cBe65Df609315dF5c4f5F729eFbd00Ade": {
+        "symbol": "GYOSHI",
+        "decimals": 18
+    },
+    "0x3F57C35633cb29834Bb7577ba8052EaB90f52a02": {
+        "symbol": "DFNDR",
+        "decimals": 18
+    },
+    "0xaE697F994Fc5eBC000F8e22EbFfeE04612f98A0d": {
+        "symbol": "LGCY",
+        "decimals": 18
+    },
+    "0xa069ADd2d093f9Df0e82Ab64Ec7dD0320CB4f65D": {
+        "symbol": "GPUBOT",
+        "decimals": 18
+    },
+    "0x9194337C06405623c0F374e63Fa1CC94e2788c58": {
+        "symbol": "CYBONK",
+        "decimals": 18
+    },
+    "0xa35Bd2246978Dfbb1980DFf8Ff0f5834335dFdbc": {
+        "symbol": "REMIO",
+        "decimals": 18
+    },
+    "0xe7eF051C6EA1026A70967E8F04da143C67Fa4E1f": {
+        "symbol": "VetMe",
+        "decimals": 9
+    },
+    "0x31aDdA225642a8f4D7e90d4152BE6661ab22a5a2": {
+        "symbol": "HYPR",
+        "decimals": 18
+    },
+    "0x285DB79fa7e0e89E822786F48A7c98C6c1dC1c7d": {
+        "symbol": "MIC",
+        "decimals": 18
+    },
+    "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4": {
+        "symbol": "ANKR",
+        "decimals": 18
+    },
+    "0x9B4a69dE6CA0deFDD02c0c4ce6Cb84de5202944E": {
+        "symbol": "PROOF",
+        "decimals": 9
+    },
+    "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E": {
+        "symbol": "PHA",
+        "decimals": 18
+    },
+    "0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2": {
+        "symbol": "CHR",
+        "decimals": 6
+    },
+    "0xc13F4F0F865bAc08F62654B57E38669EbC4747a3": {
+        "symbol": "CREDS",
+        "decimals": 18
+    },
+    "0x8eD97a637A790Be1feff5e888d43629dc05408F6": {
+        "symbol": "NPC",
+        "decimals": 18
+    },
+    "0x9AB7bb7FdC60f4357ECFef43986818A2A3569c62": {
+        "symbol": "GOG",
+        "decimals": 18
+    },
+    "0x873eC47BDe28A13F0f92EF2e379b7550171506F8": {
+        "symbol": "IAI",
+        "decimals": 18
+    },
+    "0x730BCBe5Cdc1a3061Dfe700774b7B8dd1d4173DB": {
+        "symbol": "WTF",
+        "decimals": 18
+    },
+    "0x60bE1e1fE41c1370ADaF5d8e66f07Cf1C2Df2268": {
+        "symbol": "PERC",
+        "decimals": 18
+    },
+    "0x1AA51bc7eb181ce48CE626Bf62f8956Fa9555136": {
+        "symbol": "PAW",
+        "decimals": 18
+    },
+    "0x06f7E3cecd6e66aB2fCC527e8a2e908c96e1a31c": {
+        "symbol": "WOMBAT",
+        "decimals": 18
+    },
+    "0x0C9c7712C83B3C70e7c5E11100D33D9401BdF9dd": {
+        "symbol": "WOMBAT",
+        "decimals": 18
+    },
+    "0x6aF53C6ec427525f7240E211941223288a0E7C66": {
+        "symbol": "WARPED",
+        "decimals": 18
+    },
+    "0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26": {
+        "symbol": "OGN",
+        "decimals": 18
+    },
+    "0x53C8395465A84955c95159814461466053DedEDE": {
+        "symbol": "DG",
+        "decimals": 18
+    },
+    "0x017E9Db34fC69Af0dC7c7b4b33511226971cDdc7": {
+        "symbol": "OCD",
+        "decimals": 18
+    },
+    "0x3B5CB1617E6D4CAd9d43D60796F2264C6B52E0a9": {
+        "symbol": "POR",
+        "decimals": 18
+    },
+    "0x5dE869E3E62B0FB2c15573246BA3Bb3Fd97a2275": {
+        "symbol": "SHEB",
+        "decimals": 18
+    },
+    "0xf3A5D72C0Ee23655B3F8Dc93E021b4B136Cf5eB5": {
+        "symbol": "FADER",
+        "decimals": 18
+    },
+    "0x16ECCfDbb4eE1A85A33f3A9B21175Cd7Ae753dB4": {
+        "symbol": "ROUTE",
+        "decimals": 18
+    },
+    "0xee3200F94a1A2345E6Cc486032a5Df1D50cb621c": {
+        "symbol": "CX",
+        "decimals": 18
+    },
+    "0xa693B19d2931d498c5B318dF961919BB4aee87a5": {
+        "symbol": "UST",
+        "decimals": 6
+    },
+    "0x27054b13b1B798B345b591a4d22e6562d47eA75a": {
+        "symbol": "AST",
+        "decimals": 4
+    },
+    "0x672f4fa517894496B8A958b4b3fcA068cE513A39": {
+        "symbol": "DCK",
+        "decimals": 18
+    },
+    "0x97D2FC7d16BC34121c3311f2e2E05D298c19956f": {
+        "symbol": "WFO",
+        "decimals": 18
+    },
+    "0x9196E18Bc349B1F64Bc08784eaE259525329a1ad": {
+        "symbol": "PUSSY",
+        "decimals": 18
+    },
+    "0xfF055FF1EC9AA85F14E757d769f9D52d023f2E3b": {
+        "symbol": "NHUB",
+        "decimals": 18
+    },
+    "0xF4AaA9428A881a5c054D0ED041F5749a336C9Ab5": {
+        "symbol": "MAI",
+        "decimals": 9
+    },
+    "0x02e7F808990638E9e67E1f00313037EDe2362361": {
+        "symbol": "KIBSHI",
+        "decimals": 18
+    },
+    "0x6b1a8f210Ec6b7B6643cea3583Fb0c079f367898": {
+        "symbol": "BXX",
+        "decimals": 18
+    },
+    "0x8FAc8031e079F409135766C7d5De29cf22EF897C": {
+        "symbol": "HEART",
+        "decimals": 18
+    },
+    "0x22Fc5A29bd3d6CCe19a06f844019fd506fCe4455": {
+        "symbol": "ePendle",
+        "decimals": 18
+    },
+    "0x07150e919B4De5fD6a63DE1F9384828396f25fDC": {
+        "symbol": "BASE",
+        "decimals": 9
+    },
+    "0x0D505C03d30e65f6e9b4Ef88855a47a89e4b7676": {
+        "symbol": "ZOOMER",
+        "decimals": 18
+    },
+    "0xD4318fA09C45cFb6355DEd6085B0D698b64EC1cd": {
+        "symbol": "FEDAI",
+        "decimals": 8
+    },
+    "0xAb85fc558d722A2b7c040FfB77dB676Bd9e7D322": {
+        "symbol": "MOROS",
+        "decimals": 18
+    },
+    "0x81841bC0Cf65834CE64ce987E8B094781222B595": {
+        "symbol": "TNO",
+        "decimals": 9
+    },
+    "0x249cA82617eC3DfB2589c4c17ab7EC9765350a18": {
+        "symbol": "VERSE",
+        "decimals": 18
+    },
+    "0x6BC08509B36A98E829dFfAD49Fde5e412645d0a3": {
+        "symbol": "WOOF",
+        "decimals": 18
+    },
+    "0x49fb8ad7578148E17c3eF0C344CE23A66ed372C4": {
+        "symbol": "TAOBOT",
+        "decimals": 18
+    },
+    "0x1117aC6Ad6Cdf1A3BC543baD3B133724620522d5": {
+        "symbol": "MODA",
+        "decimals": 18
+    },
+    "0xAeE9bA9CE49fe810417A36408e34D9962b653E78": {
+        "symbol": "SNIBBU",
+        "decimals": 9
+    },
+    "0xb478c6245e3D85D6EC3486B62ea872128d562541": {
+        "symbol": "$LOOT",
+        "decimals": 18
+    },
+    "0xBf5273BDE2655f528ECdb47ce44dA1772351a3eE": {
+        "symbol": "S",
+        "decimals": 18
+    },
+    "0xf8C3527CC04340b208C854E985240c02F7B7793f": {
+        "symbol": "FRONT",
+        "decimals": 18
+    },
+    "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
+        "symbol": "SAI",
+        "decimals": 18
+    },
+    "0x6Ae2A128cD07d672164cA9f2712Ea737d198Dd41": {
+        "symbol": "GOAT",
+        "decimals": 18
+    },
+    "0x24249b5a869a445C9B0CE269a08d73c618dF9d21": {
+        "symbol": "ETHEREUM",
+        "decimals": 8
+    },
+    "0x3eE4B152824b657644c7A9B50694787e80EB8F4a": {
+        "symbol": "BAZED",
+        "decimals": 18
+    },
+    "0x9778ac3D5A2f916aA9aBf1eb85C207d990ca2655": {
+        "symbol": "OGSM",
+        "decimals": 18
+    },
+    "0x8a854288a5976036A725879164Ca3e91d30c6A1B": {
+        "symbol": "GET",
+        "decimals": 18
+    },
+    "0x0305f515fa978cf87226cf8A9776D25bcfb2Cc0B": {
+        "symbol": "PEPE2.0",
+        "decimals": 18
+    },
+    "0x01BA67AAC7f75f647D94220Cc98FB30FCc5105Bf": {
+        "symbol": "LYRA",
+        "decimals": 18
+    },
+    "0x1cF4592ebfFd730c7dc92c1bdFFDfc3B9EfCf29a": {
+        "symbol": "WAVES",
+        "decimals": 18
+    },
+    "0xaBeC00542D141BDdF58649bfe860C6449807237c": {
+        "symbol": "X",
+        "decimals": 18
+    },
+    "0x777172D858dC1599914a1C4c6c9fC48c99a60990": {
+        "symbol": "SOLID",
+        "decimals": 18
+    },
+    "0x39dE85301c78F4D623E5c05cDE2fD119a3a92cd9": {
+        "symbol": "blobs",
+        "decimals": 9
+    },
+    "0x3845badAde8e6dFF049820680d1F14bD3903a5d0": {
+        "symbol": "SAND",
+        "decimals": 18
+    },
+    "0x76BC677d444f1E9d57dAf5187ee2b7dC852745aE": {
+        "symbol": "XFT",
+        "decimals": 18
+    },
+    "0x7e877b99897D514da01bD1d177E693EC639961Af": {
+        "symbol": "OGGY",
+        "decimals": 9
+    },
+    "0xF03D5fC6E08dE6Ad886fCa34aBF9a59ef633b78a": {
+        "symbol": "CAPY",
+        "decimals": 18
+    },
+    "0x2C06BA9e7F0dACcbC1f6A33EA67e85bb68fbEE3a": {
+        "symbol": "LENDS",
+        "decimals": 18
+    },
+    "0x80122c6a83C8202Ea365233363d3f4837D13e888": {
+        "symbol": "M87",
+        "decimals": 18
+    },
+    "0x2Ebd53d035150f328bd754D6DC66B99B0eDB89aa": {
+        "symbol": "MET",
+        "decimals": 18
+    },
+    "0x7d51888C5ABb7CDfa9cdd6A50673c7F8afAccD7F": {
+        "symbol": "DD",
+        "decimals": 18
+    },
+    "0x927402ab67c0CDA3c187E9DFE34554AC581441f2": {
+        "symbol": "SAITABIT",
+        "decimals": 18
+    },
+    "0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86": {
+        "symbol": "OUSD",
+        "decimals": 18
+    },
+    "0xb794Ad95317f75c44090f64955954C3849315fFe": {
+        "symbol": "RIBBIT",
+        "decimals": 18
+    },
+    "0x209a78d23f825950a5Df4D6D21288e5212B44F2c": {
+        "symbol": "ANVA",
+        "decimals": 18
+    },
+    "0x6468e79A80C0eaB0F9A2B574c8d5bC374Af59414": {
+        "symbol": "eXRD",
+        "decimals": 18
+    },
+    "0x3E9BC21C9b189C09dF3eF1B824798658d5011937": {
+        "symbol": "LINA",
+        "decimals": 18
+    },
+    "0x7b744eEa1dECa2f1B7b31F15Ba036Fa1759452d7": {
+        "symbol": "HIPP",
+        "decimals": 18
+    },
+    "0x3419875B4D3Bca7F3FddA2dB7a476A79fD31B4fE": {
+        "symbol": "DZHV",
+        "decimals": 18
+    },
+    "0x395E925834996e558bdeC77CD648435d620AfB5b": {
+        "symbol": "TFT",
+        "decimals": 7
+    },
+    "0xe8196181c5fe192B83C5cA34BE910d93D691d935": {
+        "symbol": "SOAI",
+        "decimals": 18
+    },
+    "0xE6DBeAdD1823B0BCfEB27792500b71e510AF55B3": {
+        "symbol": "COCO",
+        "decimals": 18
+    },
+    "0xDdA9Ff241C7160be8295EF9Eca2e782361467666": {
+        "symbol": "BONZAI",
+        "decimals": 18
+    },
+    "0x01202C9a1aDfC1475c960C23bdf7530698330fA0": {
+        "symbol": "JUDGE",
+        "decimals": 18
+    },
+    "0x32ECa61dC25D0742F238ce523E66b68867625dAD": {
+        "symbol": "FAIR",
+        "decimals": 18
+    },
+    "0x5FC111f3Fa4C6b32eAf65659CFEbdeed57234069": {
+        "symbol": "$0xGas",
+        "decimals": 18
+    },
+    "0xa1d6Df714F91DeBF4e0802A542E13067f31b8262": {
+        "symbol": "RFOX",
+        "decimals": 18
+    },
+    "0x7Ddc52c4De30e94Be3A6A0A2b259b2850f421989": {
+        "symbol": "GMT",
+        "decimals": 18
+    },
+    "0xB244b3574a5627849fca2057E3854340Def63071": {
+        "symbol": "VEIL",
+        "decimals": 18
+    },
+    "0xC0b6aDDDE76BE6a09231edc12A5E3794C11f594F": {
+        "symbol": "FGPU",
+        "decimals": 18
+    },
+    "0x340D2bdE5Eb28c1eed91B2f790723E3B160613B7": {
+        "symbol": "VEE",
+        "decimals": 18
+    },
+    "0x42476F744292107e34519F9c357927074Ea3F75D": {
+        "symbol": "LOOM",
+        "decimals": 18
+    },
+    "0x0d5639A1442730372e2a650a2900BA07937854f4": {
+        "symbol": "CHUB",
+        "decimals": 18
+    },
+    "0xbcd4D5AC29E06e4973a1dDcd782cd035d04BC0b7": {
+        "symbol": "QKNTL",
+        "decimals": 18
+    },
+    "0x427A03Fb96D9A94A6727fbcfbBA143444090dd64": {
+        "symbol": "PIXL",
+        "decimals": 18
+    },
+    "0x40803cEA2b2A32BdA1bE61d3604af6a814E70976": {
+        "symbol": "SPOOL",
+        "decimals": 18
+    },
+    "0x1C001D1C9e8c7B8dC717c714d30b31480ab360F5": {
+        "symbol": "GTX",
+        "decimals": 18
+    },
+    "0xbdab72602e9AD40FC6a6852CAf43258113B8F7a5": {
+        "symbol": "eSOV",
+        "decimals": 18
+    },
+    "0x109548dc14C0b8d7908A168202a4AB08BB449613": {
+        "symbol": "CBY",
+        "decimals": 18
+    },
+    "0x6D7497751656618Fc38CfB5478994a20F7E235df": {
+        "symbol": "SPYRO",
+        "decimals": 18
+    },
+    "0xDDdddd4301A082e62E84e43F474f044423921918": {
+        "symbol": "DVF",
+        "decimals": 18
+    },
+    "0x5eed99d066a8CaF10f3E4327c1b3D8b673485eED": {
+        "symbol": "SEED",
+        "decimals": 18
+    },
+    "0xCC4304A31d09258b0029eA7FE63d032f52e44EFe": {
+        "symbol": "SWAP",
+        "decimals": 18
+    },
+    "0x4C19596f5aAfF459fA38B0f7eD92F11AE6543784": {
+        "symbol": "TRU",
+        "decimals": 8
+    },
+    "0x79126d32a86e6663F3aAac4527732d0701c1AE6c": {
+        "symbol": "DMT",
+        "decimals": 18
+    },
+    "0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B": {
+        "symbol": "TRIBE",
+        "decimals": 18
+    },
+    "0xa0246c9032bC3A600820415aE600c6388619A14D": {
+        "symbol": "FARM",
+        "decimals": 18
+    },
+    "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB": {
+        "symbol": "ETHFI",
+        "decimals": 18
+    },
+    "0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2": {
+        "symbol": "WTON",
+        "decimals": 27
+    },
+    "0x9469D013805bFfB7D3DEBe5E7839237e535ec483": {
+        "symbol": "RING",
+        "decimals": 18
+    },
+    "0x9fa69536d1cda4A04cFB50688294de75B505a9aE": {
+        "symbol": "DERC",
+        "decimals": 18
+    },
+    "0x2AF5D2aD76741191D15Dfe7bF6aC92d4Bd912Ca3": {
+        "symbol": "LEO",
+        "decimals": 18
+    },
+    "0xE13Cf110176e0dd6590536CD391b8a3522475F82": {
+        "symbol": "RENT",
+        "decimals": 9
+    },
+    "0x33D0568941C0C64ff7e0FB4fbA0B11BD37deEd9f": {
+        "symbol": "RAMP",
+        "decimals": 18
+    },
+    "0x5732046A883704404F284Ce41FfADd5b007FD668": {
+        "symbol": "BLZ",
+        "decimals": 18
+    },
+    "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b": {
+        "symbol": "AXS",
+        "decimals": 18
+    },
+    "0x7A58c0Be72BE218B41C608b7Fe7C5bB630736C71": {
+        "symbol": "PEOPLE",
+        "decimals": 18
+    },
+    "0x9Cf0ED013e67DB12cA3AF8e7506fE401aA14dAd6": {
+        "symbol": "SPECTRE",
+        "decimals": 18
+    },
+    "0xa711BCC2b6f5c4fc3DFaCcc2a01148765CBbAb1C": {
+        "symbol": "GROK1.5",
+        "decimals": 9
+    },
+    "0xD417144312DbF50465b1C641d016962017Ef6240": {
+        "symbol": "CQT",
+        "decimals": 18
+    },
+    "0xDccf3968b667e515C9FC952aA6Bf834eb9d8476c": {
+        "symbol": "VINCE",
+        "decimals": 18
+    },
+    "0xA0335820dC549dBfae5b8D691331CadfCA7026E0": {
+        "symbol": "SHIBA2",
+        "decimals": 18
+    },
+    "0x4af8aa621Df6dd3e2D653188a357FC2b35c6A037": {
+        "symbol": "SELF",
+        "decimals": 18
+    },
+    "0xbEa98c05eEAe2f3bC8c3565Db7551Eb738c8CCAb": {
+        "symbol": "GYSR",
+        "decimals": 18
+    },
+    "0xab306326bC72c2335Bd08F42cbec383691eF8446": {
+        "symbol": "PPIZZA",
+        "decimals": 18
+    },
+    "0xF89674f18309A2E97843c6e9B19C07c22cAEF6d5": {
+        "symbol": "Gamer",
+        "decimals": 9
+    },
+    "0x69b14e8D3CEBfDD8196Bfe530954A0C226E5008E": {
+        "symbol": "SpacePi",
+        "decimals": 9
+    },
+    "0xa6e265667e1e18c28F2B5dc529F775C5f0D56D4A": {
+        "symbol": "WPI",
+        "decimals": 18
+    },
+    "0x54f667dB585b7B10347429C72c36c8B59aB441cb": {
+        "symbol": "GOFURS",
+        "decimals": 18
+    },
+    "0x000000007a58f5f58E697e51Ab0357BC9e260A04": {
+        "symbol": "CNV",
+        "decimals": 18
+    },
+    "0x0D8775F648430679A709E98d2b0Cb6250d2887EF": {
+        "symbol": "BAT",
+        "decimals": 18
+    },
+    "0xE3B9CfB8EA8a4F1279fBC28D3E15B4d2d86f18A0": {
+        "symbol": "FOTTIE",
+        "decimals": 9
+    },
+    "0xa709aaD0691Fc67279577566640ae1D6515c1b81": {
+        "symbol": "aBTC",
+        "decimals": 18
+    },
+    "0x6733F0283711F225A447e759D859a70b0c0Fd2bC": {
+        "symbol": "svETH",
+        "decimals": 18
+    },
+    "0x176BC22E1855Cd5cf5A840081C6c5b92b55E2210": {
+        "symbol": "GBE",
+        "decimals": 18
+    },
+    "0xb2e96a63479C2Edd2FD62b382c89D5CA79f572d3": {
+        "symbol": "wZNN",
+        "decimals": 8
+    },
+    "0x8B39B70E39Aa811b69365398e0aACe9bee238AEb": {
+        "symbol": "PKF",
+        "decimals": 18
+    },
+    "0x21E60DB1A07F0A9f688D321fD7682C6FfF734E47": {
+        "symbol": "SORAI",
+        "decimals": 18
+    },
+    "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6": {
+        "symbol": "alETH",
+        "decimals": 18
+    },
+    "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497": {
+        "symbol": "sUSDe",
+        "decimals": 18
+    },
+    "0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27": {
+        "symbol": "ibEUR",
+        "decimals": 18
+    },
+    "0xC54Ff26fd5564Ff46b14d9825A2259a0d53Bf7d9": {
+        "symbol": "sprMAV",
+        "decimals": 18
+    },
+    "0x84018071282d4B2996272659D9C01cB08DD7327F": {
+        "symbol": "BLENDR",
+        "decimals": 18
+    },
+    "0xe939F011a3d8fC0AA874c97e8156053a903D7176": {
+        "symbol": "DOLZ",
+        "decimals": 18
+    },
+    "0x000000000a1c6659ac226dBB1C5BDC648DF72E9e": {
+        "symbol": "LOOTER",
+        "decimals": 18
+    },
+    "0xa2881F7F441267042f9778fFA0d4F834693426be": {
+        "symbol": "HUSL",
+        "decimals": 18
+    },
+    "0x7aE1D57b58fA6411F32948314BadD83583eE0e8C": {
+        "symbol": "PAPER",
+        "decimals": 18
+    },
+    "0x8D6CeBD76f18E1558D4DB88138e2DeFB3909fAD6": {
+        "symbol": "MAI",
+        "decimals": 18
+    },
+    "0xfc82bb4ba86045Af6F327323a46E80412b91b27d": {
+        "symbol": "PROM",
+        "decimals": 18
+    },
+    "0xcE246eEa10988C495B4A90a905Ee9237a0f91543": {
+        "symbol": "VCX",
+        "decimals": 18
+    },
+    "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942": {
+        "symbol": "MANA",
+        "decimals": 18
+    },
+    "0xe6828D65bf5023AE1851D90D8783Cc821ba7eeE1": {
+        "symbol": "ABOND",
+        "decimals": 18
+    },
+    "0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA": {
+        "symbol": "ORBS",
+        "decimals": 18
+    },
+    "0x0FE20E0Fa9C78278702B05c333Cc000034bb69E2": {
+        "symbol": "ETHMAXY",
+        "decimals": 18
+    },
+    "0x9Be776559fED779cAbd67042a7B8987AAe592541": {
+        "symbol": "BULL",
+        "decimals": 18
+    },
+    "0x95D8Bf2F57cf973251972b496dC6B1d9C6b5bCe3": {
+        "symbol": "BLUE",
+        "decimals": 18
+    },
+    "0xA9049425b938C46ac3E312D4CdaEccb26282AeB2": {
+        "symbol": "WIK",
+        "decimals": 18
+    },
+    "0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44": {
+        "symbol": "DEUS",
+        "decimals": 18
+    },
+    "0x821A278dFff762c76410264303F25bF42e195C0C": {
+        "symbol": "pETH",
+        "decimals": 18
+    },
+    "0x39fBBABf11738317a448031930706cd3e612e1B9": {
+        "symbol": "WXRP",
+        "decimals": 18
+    },
+    "0x723CbfC05e2cfcc71d3d89e770D32801A5eEf5Ab": {
+        "symbol": "BTCP",
+        "decimals": 8
+    },
+    "0xaDD353fb2e2c563383FF3272a500f3e7134DAfe4": {
+        "symbol": "TUNA",
+        "decimals": 18
+    },
+    "0x740a5aC14D0096c81d331aDC1611cF2FD28AE317": {
+        "symbol": "PLEB",
+        "decimals": 9
     }
 }

@@ -10,10 +10,12 @@ from data.logger import CustomFormatter
 from web3_provider import w3
 
 from abis import AAVE_LENDING_V2
-from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL, AGG_ROUTER_V5, AGG_ROUTER_V6
-from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI_V1, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, PANCAKE_V3, \
+from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL, AGG_ROUTER_V5, AGG_ROUTER_V6, wstETH, stETH, WETH
+from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI_V1, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, \
+    PANCAKE_V3, \
     SYNAPSE, BANCOR, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, \
-    ONEINCH_V5_LIMIT, ONEINCH_V6_LIMIT, INTEGRAL, SNX, BEBOP_RFQ, NATIVE_V1, DEFI_PLAZA, MSTABLE, SMOOTHY_V1, FIXED_RATE
+    ONEINCH_V5_LIMIT, ONEINCH_V6_LIMIT, INTEGRAL, SNX, BEBOP_RFQ, NATIVE_V1, DEFI_PLAZA, MSTABLE, SMOOTHY_V1, \
+    FIXED_RATE, SMARDEX
 from token_abis import STETH, RETH, SFRXETH, AAVE_TOKEN, ERC20
 from utils import generate_swap_dag
 
@@ -57,6 +59,7 @@ INTEGRAL = w3.eth.contract(address=None, abi=INTEGRAL)
 SNX = w3.eth.contract(address=None, abi=SNX)
 SMOOTHY_V1 = w3.eth.contract(address=None, abi=SMOOTHY_V1)
 FIXED_RATE = w3.eth.contract(address=None, abi=FIXED_RATE)
+SMARDEX = w3.eth.contract(address=None, abi=SMARDEX)
 
 
 def load_pool_cache():
@@ -337,67 +340,67 @@ def get_aave_actions(r_):
 
 def get_steth_actions(r_):
     first_log_index = r_['logs'][0]['logIndex']
-    token = w3.eth.contract(address=TOKENS['stETH'], abi=STETH)
+    token = w3.eth.contract(address=stETH, abi=STETH)
     transfers = token.events.Transfer().process_receipt(r_)
 
     steth_wraps = [t for t in transfers if
-                   t.address == TOKENS['stETH'] and t['args'][
-                       'to'] == TOKENS['wstETH']]
+                   t.address == stETH and t['args'][
+                       'to'] == wstETH]
     actions = []
     for wrap in steth_wraps:
         from_ = wrap['args']['from']
         index = wrap['logIndex']
         if from_ != ZERO:  # Not the chained WETH --> stETH --> wstETH case
             previous = [e for e in transfers if e['logIndex'] < wrap['logIndex']
-                        and e['address'] == TOKENS['wstETH']]
+                        and e['address'] == wstETH]
             assert len(previous) > 0
             wsteth_log = previous[-1]
             assert wsteth_log['args']['to'] == from_
         else:  # stETH gets sent from ZERO, means it just got minted and wstETH transfer will be AFTER
             next_ = [e for e in transfers if e['logIndex'] > wrap['logIndex']
-                     and e['address'] == TOKENS['wstETH']]
+                     and e['address'] == wstETH]
             assert len(next_) > 0
             wsteth_log = next_[0]
         wrap_action = {
-            'pool_address': TOKENS['wstETH'],
+            'pool_address': wstETH,
             'from': from_,
             'to': from_,
             'protocol': 'steth_wrap',
-            'token_in': TOKENS['stETH'],
+            'token_in': stETH,
             'amount_in': wrap['args']['value'],
-            'token_out': TOKENS['wstETH'],
+            'token_out': wstETH,
             'amount_out': wsteth_log['args']['value'],
             'log_index': index
         }
         actions.append(wrap_action)
 
     steth_unwraps = [t for t in transfers if
-                     t.address == TOKENS['stETH'] and t['args'][
-                         'from'] == TOKENS['wstETH']]
+                     t.address == stETH and t['args'][
+                         'from'] == wstETH]
 
     for unwrap in steth_unwraps:
         to_ = unwrap['args']['to']
         index = unwrap['logIndex']
         previous = [e for e in transfers if e['logIndex'] < unwrap['logIndex']
-                    and e['address'] == TOKENS['wstETH']]
+                    and e['address'] == wstETH]
         assert len(previous) > 0
         wsteth_log = previous[-1]
         assert wsteth_log['args']['from'] == to_
         wrap_action = {
-            'pool_address': TOKENS['wstETH'],
+            'pool_address': wstETH,
             'from': to_,
             'to': to_,
             'protocol': 'steth_unwrap',
-            'token_in': TOKENS['wstETH'],
+            'token_in': wstETH,
             'amount_in': wsteth_log['args']['value'],
-            'token_out': TOKENS['stETH'],
+            'token_out': stETH,
             'amount_out': unwrap['args']['value'],
             'log_index': index
         }
         actions.append(wrap_action)
 
     steth_mints = [t for t in transfers if
-                   t.address == TOKENS['stETH'] and t['args'][
+                   t.address == stETH and t['args'][
                        'from'] == ZERO]
     for mint in steth_mints:
         to_ = mint['args']['to']
@@ -405,16 +408,16 @@ def get_steth_actions(r_):
         prev_deposits = [d for d in deposits if d['logIndex'] < mint['logIndex']]
         assert len(prev_deposits) > 0
         deposit_log = prev_deposits[-1]
-        assert deposit_log['address'] == TOKENS['stETH']
+        assert deposit_log['address'] == stETH
         assert deposit_log['args']['sender'] == to_
         mint_action = {
-            'pool_address': TOKENS['stETH'],
+            'pool_address': stETH,
             'from': to_,
             'to': to_,
             'protocol': 'steth_mint',
-            'token_in': TOKENS['WETH'],
+            'token_in': WETH,
             'amount_in': deposit_log['args']['amount'],
-            'token_out': TOKENS['stETH'],
+            'token_out': stETH,
             'amount_out': mint['args']['value'],
             'log_index': mint['logIndex']
         }
@@ -676,6 +679,7 @@ def extract_swaps(r):
         'SDAI': get_sdai_actions(r),
         'SMOOTHY_V1': SMOOTHY_V1.events.Swap().process_receipt(r),
         'FIXED_RATE': FIXED_RATE.events.Swap().process_receipt(r),
+        'SMARDEX': SMARDEX.events.Swap().process_receipt(r),
     }
 
     # aave_actions = get_aave_actions(r)
@@ -685,14 +689,15 @@ def extract_swaps(r):
 
 def main():
     # logger.info('Loading data')
-    data = pd.read_csv('/home/robert/Projects/liquidity-parser/1inch4.csv')
+    data = pd.read_csv('/home/robert/Projects/liquidity-parser/odos.csv')
     data = data.dropna()
     data = data.sort_values('amount_usd', ascending=False).reset_index(drop=True)
-    data = data[~((data['src_token_symbol'].isin(['WETH', 'ETH'])) & (data['src_token_symbol'].isin(['WETH', 'ETH'])))]
     data = data[
-        data['tx_to'].isin(['0x1111111254eeb25477b68fb85ed929f73a960582',
-                            # '0xad3b67bca8935cb510c8d18bd45f0b94f54a968f',
-                           '0x111111125421ca6dc452d289314280a0f8842a65'])]
+        ~((data['token_sold_symbol'].isin(['WETH', 'ETH'])) & (data['token_bought_symbol'].isin(['WETH', 'ETH'])))]
+    # data = data[
+    #     data['tx_to'].isin(['0x1111111254eeb25477b68fb85ed929f73a960582',
+    #                         '0xad3b67bca8935cb510c8d18bd45f0b94f54a968f',
+    # '0x111111125421ca6dc452d289314280a0f8842a65'])]
     logger.info('Data loaded')
     # cache = load_pool_cache()
     # Weird metapool events: https://etherscan.io/tx/0x48a571b2e7a842a0c0a1981433de9e7e582bf6ad3f6adc217439afcca451c178
@@ -701,7 +706,7 @@ def main():
     # receipt = w3.eth.get_transaction_receipt('0x8ff9cb9838d46c1df4c897274a5066df67c766a5370bfc4cee6a8c9ecc7f541f')
     # receipt = w3.eth.get_transaction_receipt('0x746abc3b9a30dd4ef17bc6033d53a88243b6438857c73a353102eeefbef1e7c6')
     # receipt = w3.eth.get_transaction_receipt('0x69eb97caa4293d771f1e6cfb2c1dd98bd513369f9d772fef78178741b448a374')
-    # receipt = w3.eth.get_transaction_receipt('0x8e52e8a7edc737d384d52b4f61518a707abd661b05f4d67e8267a031b66b4a49')
+    # receipt = w3.eth.get_transaction_receipt('0x333fd06a7079a6420b8f125c7043d9667b47fcd85db6f83fe3a105a918a9f570')
     # transfers = extract_erc20_transfers(receipt)
     # swaps = extract_swaps(receipt)
     # dag = generate_swap_dag(swaps, transfers, symbols=True)
@@ -711,13 +716,11 @@ def main():
     # import ipdb;
     # ipdb.set_trace()
 
-    with open('parsed.json') as f:
-        parsed = json.load(f)
+    # with open('parsed.json') as f:
+    #     parsed = json.load(f)
     for i, r in data.reset_index(drop=True).iterrows():
-        if r['tx_hash'] in parsed:
+        if i < 783:
             continue
-        # if i < 412:
-        #     continue
         tx_hash = r['tx_hash']
         logger.info(f"Processing transaction {i}: {tx_hash}")
         # logger.info(f"Num trades {r['num_trades']}, volume {int(r['batch_value'])} USD, solver {r['solver']}")
@@ -726,10 +729,10 @@ def main():
         transfers = extract_erc20_transfers(receipt)
         dag = generate_swap_dag(swaps, transfers, symbols=True)
         logger.info(f"Protocols used:{swaps.keys()}")
-        parsed[r['tx_hash']] = dag
-        if i % 50 == 0:
-            with open('parsed.json', 'w') as f:
-                json.dump(parsed, f, indent=2)
+        # parsed[r['tx_hash']] = dag
+        # if i % 50 == 0:
+        #     with open('parsed.json', 'w') as f:
+        #         json.dump(parsed, f, indent=2)
         pprint(dict(tally_dag(dag)))
     import ipdb;
     ipdb.set_trace()

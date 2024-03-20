@@ -3,11 +3,11 @@ import logging
 
 import ipdb
 
-from abis import UNI_V1, UNI_V2, UNI_V3
+from abis import UNI_V1, UNI_V2, UNI_V3, BALANCER_V2
 from data.logger import CustomFormatter
 from token_abis import ERC20
 from web3_provider import w3
-from addresses import ETH, WETH
+from addresses import ETH, WETH, BALANCER_VAULT, SWAAP_VAULT
 
 
 def load_token_cache():
@@ -64,6 +64,14 @@ def get_uni_v1_pool_data(address):
     return token
 
 
+def get_balancer_v2_pool_data(address, pool_id):
+    # Address for BALANCER/SWAAP disctinction
+    vault = w3.eth.contract(address=address, abi=BALANCER_V2)
+    pool_data = vault.functions.getPoolTokens(pool_id).call()
+    tokens = pool_data[0]
+    return tokens
+
+
 def get_curve_v1_pool_data(address):
     pass
 
@@ -94,6 +102,7 @@ def generate_swap_dag(events, transfers, symbols):
     kyber_swaps = events.get('KYBER', [])
     smoothy_v1_swaps = events.get('SMOOTHY_V1', [])
     fixed_rate_swaps = events.get('FIXED_RATE', [])
+    smardex_swaps = events.get('SMARDEX', [])
 
     reth_swaps = events.get('RETH', [])
     frxeth_swaps = events.get('FRXETH', [])
@@ -351,15 +360,30 @@ def generate_swap_dag(events, transfers, symbols):
         swaps.append(swap)
 
     for s in balancer_v2_swaps:
+        pool_id = w3.to_hex(s['args']['poolId'])
+        pool_address = w3.to_checksum_address(pool_id[:42])
         swap = {
-            'pool_address': s['address'],
-            'protocol': 'balancer_v2',
+            'pool_address': pool_address,
             'token_in': s['args']['tokenIn'],
             'amount_in': s['args']['amountIn'],
             'token_out': s['args']['tokenOut'],
             'amount_out': s['args']['amountOut'],
             'log_index': s['logIndex']
         }
+        if s['address'] == BALANCER_VAULT and pool_address not in POOLS['BALANCER_V2']:
+            logger.warning(f"Missing BALANCER_V2 pool {pool_address}")
+            tokens = get_balancer_v2_pool_data(BALANCER_VAULT, pool_id)
+            tokens = [t for t in tokens if t != pool_address]
+            POOLS['BALANCER_V2'][pool_address] = {f"{i}": t for i, t in enumerate(tokens)}
+            save_pool_cache(POOLS)
+            swap['protocol'] = 'balancer_v2'
+        if s['address'] == SWAAP_VAULT and pool_address not in POOLS['SWAAP_V2']:
+            logger.warning(f"Missing SWAAP_V2 pool {pool_address}")
+            tokens = get_balancer_v2_pool_data(SWAAP_VAULT, pool_id)
+            tokens = [t for t in tokens if t != pool_address]
+            POOLS['SWAAP_V2'][pool_address] = {f"{i}": t for i, t in enumerate(tokens)}
+            save_pool_cache(POOLS)
+            swap['protocol'] = 'swaap_v2'
 
         # Find matching transfers. Balancer V2 first emits, then moves funds.
         # Balancer multihops are just accounting inside the contract, no funds are moved
@@ -383,9 +407,9 @@ def generate_swap_dag(events, transfers, symbols):
 
         # If no transfers then multihop within the Vault
         if swap.get('from') is None:
-            swap['from'] = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
+            swap['from'] = s['address']
         if swap.get('to') is None:
-            swap['to'] = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
+            swap['to'] = s['address']
 
         swaps.append(swap)
 
@@ -597,8 +621,41 @@ def generate_swap_dag(events, transfers, symbols):
         else:
             logger.warning('SUSPICIOUS FIXED_RATE SWAP')
             continue
-        import ipdb;
-        ipdb.set_trace()
+        swaps.append(swap)
+
+    for s in smardex_swaps:
+        swap = {
+            'pool_address': s['address'],
+            'protocol': 'uni_v2',
+            'from': s['args']['sender'],
+            'to': s['args']['to'],
+            'log_index': s['logIndex']
+        }
+
+        if s['address'] not in POOLS['SMARDEX']:
+            logger.warning(f"Missing SMARDEX pool {s['address']}")
+            t0, t1 = get_uni_v2_pool_data(s['address'])
+            POOLS['SMARDEX'][s['address']] = {
+                "0": t0,
+                "1": t1}
+            save_pool_cache(POOLS)
+        else:
+            t0 = POOLS['SMARDEX'][s['address']]['0']
+            t1 = POOLS['SMARDEX'][s['address']]['1']
+
+        if s['args']['amount0'] > 0:
+            swap['token_in'] = t0
+            swap['amount_in'] = s['args']['amount0']
+            swap['token_out'] = t1
+            swap['amount_out'] = abs(s['args']['amount1'])
+        elif s['args']['amount1'] > 0:
+            swap['token_in'] = t1
+            swap['amount_in'] = s['args']['amount1']
+            swap['token_out'] = t0
+            swap['amount_out'] = abs(s['args']['amount0'])
+        else:
+            logger.warning('SUSPICIOUS SMARDEX SWAP')
+            continue
         swaps.append(swap)
 
     # Filthy

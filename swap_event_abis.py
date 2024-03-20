@@ -892,18 +892,18 @@ ONEINCH_V5_LIMIT = [{
     "type": "event"}]
 
 ONEINCH_V6_LIMIT = [{
-                        "anonymous": False,
-                        "inputs": [{
-                                       "indexed": False,
-                                       "internalType": "bytes32",
-                                       "name": "orderHash",
-                                       "type": "bytes32"}, {
-                                       "indexed": False,
-                                       "internalType": "uint256",
-                                       "name": "remainingAmount",
-                                       "type": "uint256"}],
-                        "name": "OrderFilled",
-                        "type": "event"}]
+    "anonymous": False,
+    "inputs": [{
+        "indexed": False,
+        "internalType": "bytes32",
+        "name": "orderHash",
+        "type": "bytes32"}, {
+        "indexed": False,
+        "internalType": "uint256",
+        "name": "remainingAmount",
+        "type": "uint256"}],
+    "name": "OrderFilled",
+    "type": "event"}]
 
 INTEGRAL = [{
     "anonymous": False,
@@ -1258,6 +1258,28 @@ FIXED_RATE = [{
         "indexed": False,
         "internalType": "int256",
         "name": "token1Amount",
+        "type": "int256"}],
+    "name": "Swap",
+    "type": "event"}]
+
+SMARDEX = [{
+    "anonymous": False,
+    "inputs": [{
+        "indexed": True,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"}, {
+        "indexed": True,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"}, {
+        "indexed": False,
+        "internalType": "int256",
+        "name": "amount0",
+        "type": "int256"}, {
+        "indexed": False,
+        "internalType": "int256",
+        "name": "amount1",
         "type": "int256"}],
     "name": "Swap",
     "type": "event"}]

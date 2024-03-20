@@ -114,7 +114,18 @@ UNI_V2 = [{
         "type": "address"}],
     "payable": False,
     "stateMutability": "view",
-    "type": "function"}]
+    "type": "function"},
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "factory",
+        "outputs": [{
+            "internalType": "address",
+            "name": "",
+            "type": "address"}],
+        "payable": False,
+        "stateMutability": "view",
+        "type": "function"}]
 
 UNI_V3 = [{
     "inputs": [],
@@ -132,15 +143,43 @@ UNI_V3 = [{
         "name": "",
         "type": "address"}],
     "stateMutability": "view",
-    "type": "function"}]
+    "type": "function"},
+    {
+        "inputs": [],
+        "name": "factory",
+        "outputs": [{
+            "internalType": "address",
+            "name": "",
+            "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"}]
 
 UNI_V1 = [{
-              "name": "tokenAddress",
-              "outputs": [{
-                              "type": "address",
-                              "name": "out"}],
-              "inputs": [],
-              "constant": True,
-              "payable": False,
-              "type": "function",
-              "gas": 1413}]
+    "name": "tokenAddress",
+    "outputs": [{
+        "type": "address",
+        "name": "out"}],
+    "inputs": [],
+    "constant": True,
+    "payable": False,
+    "type": "function",
+    "gas": 1413}]
+
+BALANCER_V2 = [{
+    "inputs": [{
+        "internalType": "bytes32",
+        "name": "poolId",
+        "type": "bytes32"}],
+    "name": "getPoolTokens",
+    "outputs": [{
+        "internalType": "contract IERC20[]",
+        "name": "tokens",
+        "type": "address[]"}, {
+        "internalType": "uint256[]",
+        "name": "balances",
+        "type": "uint256[]"}, {
+        "internalType": "uint256",
+        "name": "lastChangeBlock",
+        "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"}]
