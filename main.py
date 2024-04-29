@@ -10,7 +10,7 @@ from data.logger import CustomFormatter
 from web3_provider import w3
 
 from abis import AAVE_LENDING_V2
-from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL, AGG_ROUTER_V5, AGG_ROUTER_V6, wstETH, stETH, WETH
+from addresses import TOKENS, ZERO, PSM_USDC_A, CLIPPER_POOL, AGG_ROUTER_V5, AGG_ROUTER_V6, wstETH, stETH, WETH, ETH
 from swap_event_abis import BALANCER_V1, BALANCER_V2, UNI_V1, UNI_V2, UNI_V3, CURVE_V1, CURVE_V2, CURVE_V2_1, \
     PANCAKE_V3, \
     SYNAPSE, BANCOR, BANCOR_V3, KYBER, MAV_V1, DODO, DODO_V2, CLIPPER, OTC_ORDER, RFQ_ORDER, HASHFLOW, ONEINCH_RFQ, \
@@ -199,15 +199,29 @@ def get_hashflow_rfq(r_):
     transfers = token.events.Transfer().process_receipt(r_)
     rfq = []
     for event in rfq_events:
-        previous = [e for e in transfers if e['logIndex'] < event['logIndex']][-1]
-        next_ = [e for e in transfers if e['logIndex'] > event['logIndex']][0]
-        assert next_['args']['from'] == previous['args']['to']
+        previous = [e for e in transfers if e['logIndex'] < event['logIndex']]
+        next_ = [e for e in transfers if e['logIndex'] > event['logIndex']]
+        if event['args']['baseToken'] != ZERO and event['args']['quoteToken'] != ZERO:
+            assert len(previous) > 0
+            assert len(next_) > 0
+            assert next_[0]['args']['from'] == previous[-1]['args']['to']
+            pool_address = previous[-1]['args']['to']
+        elif event['args']['quoteToken'] == ZERO:
+            assert len(previous) > 0
+            pool_address = previous[-1]['args']['to']
+        elif event['args']['baseToken'] == ZERO:
+            assert len(next_) > 0
+            pool_address = next_[0]['args']['from']
+        else:
+            logger.warning(f"Suspicious Hashflow swap")
+            pool_address = ''
+
         rfq_action = {
-            'pool_address': next_['args']['from'],
+            'pool_address': pool_address,
             'protocol': 'hashflow',
-            'token_in': event['args']['baseToken'],
+            'token_in': event['args']['baseToken'] if event['args']['baseToken'] != ZERO else ETH,
             'amount_in': event['args']['baseTokenAmount'],
-            'token_out': event['args']['quoteToken'],
+            'token_out': event['args']['quoteToken'] if event['args']['quoteToken'] != ZERO else ETH,
             'amount_out': event['args']['quoteTokenAmount'],
             'from': event['args']['trader'],
             'to': event['args']['trader'],
@@ -706,7 +720,7 @@ def main():
     # receipt = w3.eth.get_transaction_receipt('0x8ff9cb9838d46c1df4c897274a5066df67c766a5370bfc4cee6a8c9ecc7f541f')
     # receipt = w3.eth.get_transaction_receipt('0x746abc3b9a30dd4ef17bc6033d53a88243b6438857c73a353102eeefbef1e7c6')
     # receipt = w3.eth.get_transaction_receipt('0x69eb97caa4293d771f1e6cfb2c1dd98bd513369f9d772fef78178741b448a374')
-    # receipt = w3.eth.get_transaction_receipt('0x333fd06a7079a6420b8f125c7043d9667b47fcd85db6f83fe3a105a918a9f570')
+    # receipt = w3.eth.get_transaction_receipt('0x60f2c407acdddef0e663875c72f70a9df8d5d42bedd0214a44565759d8f859df')
     # transfers = extract_erc20_transfers(receipt)
     # swaps = extract_swaps(receipt)
     # dag = generate_swap_dag(swaps, transfers, symbols=True)
@@ -716,10 +730,10 @@ def main():
     # import ipdb;
     # ipdb.set_trace()
 
-    # with open('parsed.json') as f:
-    #     parsed = json.load(f)
+    with open('odos_parsed.json') as f:
+        parsed = json.load(f)
     for i, r in data.reset_index(drop=True).iterrows():
-        if i < 783:
+        if r['tx_hash'] in parsed:
             continue
         tx_hash = r['tx_hash']
         logger.info(f"Processing transaction {i}: {tx_hash}")
@@ -729,10 +743,10 @@ def main():
         transfers = extract_erc20_transfers(receipt)
         dag = generate_swap_dag(swaps, transfers, symbols=True)
         logger.info(f"Protocols used:{swaps.keys()}")
-        # parsed[r['tx_hash']] = dag
-        # if i % 50 == 0:
-        #     with open('parsed.json', 'w') as f:
-        #         json.dump(parsed, f, indent=2)
+        parsed[r['tx_hash']] = dag
+        if i % 50 == 0:
+            with open('odos_parsed.json', 'w') as f:
+                json.dump(parsed, f, indent=2)
         pprint(dict(tally_dag(dag)))
     import ipdb;
     ipdb.set_trace()

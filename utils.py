@@ -370,20 +370,25 @@ def generate_swap_dag(events, transfers, symbols):
             'amount_out': s['args']['amountOut'],
             'log_index': s['logIndex']
         }
-        if s['address'] == BALANCER_VAULT and pool_address not in POOLS['BALANCER_V2']:
-            logger.warning(f"Missing BALANCER_V2 pool {pool_address}")
-            tokens = get_balancer_v2_pool_data(BALANCER_VAULT, pool_id)
-            tokens = [t for t in tokens if t != pool_address]
-            POOLS['BALANCER_V2'][pool_address] = {f"{i}": t for i, t in enumerate(tokens)}
-            save_pool_cache(POOLS)
+        if s['address'] == BALANCER_VAULT:
             swap['protocol'] = 'balancer_v2'
-        if s['address'] == SWAAP_VAULT and pool_address not in POOLS['SWAAP_V2']:
-            logger.warning(f"Missing SWAAP_V2 pool {pool_address}")
-            tokens = get_balancer_v2_pool_data(SWAAP_VAULT, pool_id)
-            tokens = [t for t in tokens if t != pool_address]
-            POOLS['SWAAP_V2'][pool_address] = {f"{i}": t for i, t in enumerate(tokens)}
-            save_pool_cache(POOLS)
+            if pool_address not in POOLS['BALANCER_V2']:
+                logger.warning(f"Missing BALANCER_V2 pool {pool_address}")
+                tokens = get_balancer_v2_pool_data(BALANCER_VAULT, pool_id)
+                tokens = [t for t in tokens if t != pool_address]
+                POOLS['BALANCER_V2'][pool_address] = {f"{i}": t for i, t in enumerate(tokens)}
+                save_pool_cache(POOLS)
+                swap['protocol'] = 'balancer_v2'
+        elif s['address'] == SWAAP_VAULT:
             swap['protocol'] = 'swaap_v2'
+            if pool_address not in POOLS['SWAAP_V2']:
+                logger.warning(f"Missing SWAAP_V2 pool {pool_address}")
+                tokens = get_balancer_v2_pool_data(SWAAP_VAULT, pool_id)
+                tokens = [t for t in tokens if t != pool_address]
+                POOLS['SWAAP_V2'][pool_address] = {f"{i}": t for i, t in enumerate(tokens)}
+                save_pool_cache(POOLS)
+        else:
+            logger.warning(f"Unknown Balancer Vault {pool_address}")
 
         # Find matching transfers. Balancer V2 first emits, then moves funds.
         # Balancer multihops are just accounting inside the contract, no funds are moved
@@ -626,7 +631,7 @@ def generate_swap_dag(events, transfers, symbols):
     for s in smardex_swaps:
         swap = {
             'pool_address': s['address'],
-            'protocol': 'uni_v2',
+            'protocol': 'smardex',
             'from': s['args']['sender'],
             'to': s['args']['to'],
             'log_index': s['logIndex']
